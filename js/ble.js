@@ -1,37 +1,74 @@
+/*
+ * Reference: https://googlechrome.github.io/samples/web-bluetooth/
+ */
+let bleDevice = null;
 let ledCharacteristic = null;
 const connectToBle = async () => {
     try {
         log('Requesting any Bluetooth Device...');
-        const optionalServices = ['00001553-1212-efde-1523-785feabcd123'];
-        const device = await navigator.bluetooth.requestDevice(
-            { filters: [ { services: ["00001553-1212-efde-1523-785feabcd123"] } ] }
+        //const optionalServices = ['00001553-1212-efde-1523-785feabcd123'];
+        bleDevice = await navigator.bluetooth.requestDevice(
+            { filters: [{ services: ["00001553-1212-efde-1523-785feabcd123"] }] }
         );
-    
+        bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
         log('Connecting to GATT Server...');
-        const server = await device.gatt.connect();
-    
+        const server = await bleDevice.gatt.connect();
+
         // Note that we could also get all services that match a specific UUID by
         // passing it to getPrimaryServices().
         log('Getting Services...');
         const services = await server.getPrimaryServices('00001553-1212-efde-1523-785feabcd123');
-    
+
         log('Getting Characteristics...');
         for (const service of services) {
-          log('> Service: ' + service.uuid);
-          const characteristics = await service.getCharacteristics();
-    
-          characteristics.forEach(characteristic => {
-            log('>> Characteristic: ' + characteristic.uuid + ' ' +
-                getSupportedProperties(characteristic));
-            if (characteristic.uuid === '00001554-1212-efde-1523-785feabcd123') {
-                ledCharacteristic = characteristic;
-            }
-          });
+            log('> Service: ' + service.uuid);
+            const characteristics = await service.getCharacteristics();
+
+            characteristics.forEach(characteristic => {
+                log('>> Characteristic: ' + characteristic.uuid + ' ' +
+                    getSupportedProperties(characteristic));
+                if (characteristic.uuid === '00001554-1212-efde-1523-785feabcd123') {
+                    ledCharacteristic = characteristic;
+                }
+            });
         }
-    } catch(error) {
+    } catch (error) {
         log('Argh! ' + error);
     }
 };
+
+const disconnectFromBle = () => {
+    if (!bleDevice) {
+        return;
+    }
+    log('Disconnecting from Bluetooth Device...');
+    if (bleDevice.gatt.connected) {
+        bleDevice.gatt.disconnect();
+    } else {
+        log('> Bluetooth Device is already disconnected');
+    }
+};
+
+const onDisconnected = (event) => {
+    // Object event.target is Bluetooth Device getting disconnected.
+    log('> Bluetooth Device disconnected');
+};
+
+function reconnectToBle() {
+    if (!bleDevice) {
+        return;
+    }
+    if (bleDevice.gatt.connected) {
+        log('> Bluetooth Device is already connected');
+        return;
+    }
+    try {
+        connectToBle();
+    } catch (error) {
+        log('Argh! ' + error);
+    }
+}
 
 
 /* Utils */
