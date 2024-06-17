@@ -1,22 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
-    <script src="js/app.js" type="text/javascript"></script>
-    <title>Document</title>
-</head>
-<body>
-    <div>This is a sample page.</div>
-    <div>
-        <div><button id="button">Click me</button></div>
-        <div id="caption"></div>
-    </div>
-    <div>
-        <a href="profile/index.html">Profile page</a>
-    </div>
-</body>
+<html>
+    <head>
+        <title>BLE | LWBS (LED Wrist Band Service)</title>
+        <script type="text/javascript" src="js/ble.js"></script>
+        <style>
+            #log {
+                width: calc(100% - 40px);
+                min-height: 120px;
+                max-height: 240px;
+                overflow: auto;
+                background-color: #eee;
+                border-radius: 4px;
+                margin-top: 12px;
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+        </style>
+    </head>
+    <body>
+        <button onclick="connectToBle()">Connect</button>
+        <!--
+        <div>LED:
+            <button onclick="turnOnLed()">ON</button>
+            <button onclick="turnOffLed()">OFF</button>
+        </div>
+        -->
+        <div>LED strip:
+            <button onclick="turnOffLed()">OFF</button>
+            <button onclick="turnRedLed()">Red</button>
+            <button onclick="turnGreenLed()">Green</button>
+            <button onclick="turnBlueLed()">Blue</button>
+        </div>
+        <div>
+            Brightness:
+            <input type="range" id="brightness" min="0" max="255" value="255" onchange="handleSliderChanged()"> 
+        </div>
+        <!--
+        <div>
+            Send text:
+            <input type="text" id="text_value" />
+            <button onclick="sendText()">Send</button>
+        </div>
+        -->
+        <div id="log">
+        </div>
+    </body>
 </html>
