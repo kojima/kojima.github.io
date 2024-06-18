@@ -1,52 +1,55 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">        
-        <title>BLE | LWBS (LED Wrist Band Service)</title>
-        <script type="text/javascript" src="js/ble.js"></script>
-        <style>
-            #log {
-                width: calc(100% - 40px);
-                min-height: 120px;
-                max-height: 240px;
-                overflow: auto;
-                background-color: #eee;
-                border-radius: 4px;
-                margin-top: 12px;
-                padding: 8px 16px;
-                font-size: 0.8rem;
-            }
-        </style>
-    </head>
-    <body>
-        <button onclick="connectToBle()">Connect</button>
-        <button onclick="disconnectFromBle()">Disconnect</button>
-        <button onclick="reconnectToBle()">Reconnect</button>
-        <!--
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>BLE | LWBS (LED Wrist Band Service)</title>
+    <script type="text/javascript" src="js/ble.js"></script>
+    <style>
+        #log {
+            width: calc(100% - 40px);
+            min-height: 120px;
+            max-height: 240px;
+            overflow: auto;
+            background-color: #eee;
+            border-radius: 4px;
+            margin-top: 12px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="connectToBle()">Connect</button>
+    <button onclick="disconnectFromBle()">Disconnect</button>
+    <button onclick="reconnectToBle()">Reconnect</button>
+    <!--
         <div>LED:
             <button onclick="turnOnLed()">ON</button>
             <button onclick="turnOffLed()">OFF</button>
         </div>
         -->
-        <div>LED strip:
-            <button onclick="turnOffLed()">OFF</button>
-            <button onclick="turnRedLed()">Red</button>
-            <button onclick="turnGreenLed()">Green</button>
-            <button onclick="turnBlueLed()">Blue</button>
-        </div>
-        <div>
-            Brightness:
-            <input type="range" id="brightness" min="0" max="255" value="255" onchange="handleSliderChanged()"> 
-        </div>
-        <!--
+    <div>LED strip:
+        <button onclick="turnOffLed()">OFF</button>
+        <button onclick="turnRedLed()">Red</button>
+        <button onclick="turnGreenLed()">Green</button>
+        <button onclick="turnBlueLed()">Blue</button>
+    </div>
+    <div>
+        Brightness:
+        <input type="range" id="brightness" min="0" max="255" value="255" onchange="handleSliderChanged()">
+    </div>
+    <!--
         <div>
             Send text:
             <input type="text" id="text_value" />
             <button onclick="sendText()">Send</button>
         </div>
         -->
-        <div id="log">
-        </div>
-    </body>
+    <div id="log">
+    </div>
+</body>
+
 </html>
