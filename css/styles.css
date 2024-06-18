@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+svg {
+    margin-top: 24px;
+}
+
+svg,
+svg * {
+    user-select: none;
+}
+
+svg g:not(.grabbing):hover {
+    cursor: grab;
+}
+
+svg g.grabbing {
+    cursor: grabbing;
+}
+
+svg g.moving {
+    opacity: 0.75;
+}
+
+svg rect.moving {
+    cursor: all-scroll;
+}
+
+text.blocklyText {
+    font: 600 12pt "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    fill: #fff;
+    stroke: none;
+}

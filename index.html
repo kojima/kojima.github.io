@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>BLE | LWBS (LED Wrist Band Service)</title>
     <script type="text/javascript" src="js/ble.js"></script>
+    <script type="text/javascript" src="js/block-editor.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
     <style>
         #log {
             width: calc(100% - 40px);
@@ -49,6 +51,16 @@
         </div>
         -->
     <div id="log">
+    </div>
+
+    <div>
+        <svg width="1280" height="640">
+            <rect x="0" , y="0" width="100%" height="100%" fill="#eee"></rect>
+        </svg>
+    </div>
+    <div>
+        <button id="zoom_in">Zoom in</button>
+        <button id="zoom_out">Zoom out</button>
     </div>
 </body>
 
