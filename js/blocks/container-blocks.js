@@ -158,7 +158,6 @@ class ContainerBlocklyElement extends BlocklyElement {
     }
 
 
-    /*
     get absX() {
         return this._absX;
     }
@@ -170,10 +169,7 @@ class ContainerBlocklyElement extends BlocklyElement {
         super._absX = newAbsX;
         for (let i = 0; i < this._innerBlocks.length; i++) {
             let n = this._innerBlocks[i];
-            while (n) {
-                n.absX = n.prevBlock._absX + n.x;
-                n = n._nextBlock;
-            }    
+            if (n) n.absX = n.x + newAbsX;
         }
     }
 
@@ -181,13 +177,9 @@ class ContainerBlocklyElement extends BlocklyElement {
         super._absY = newAbsY;
         for (let i = 0; i < this._innerBlocks.length; i++) {
             let n = this._innerBlocks[i];
-            while (n) {
-                n.absY = n.prevBlock._absY + n.y;
-                n = n._nextBlock;
-            }    
+            if (n) n.absY = n.y + newAbsY;
         }
     }
-        */
 }
 
 class InitialBlocklyElement extends ContainerBlocklyElement {
