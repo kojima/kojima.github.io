@@ -89,7 +89,7 @@ class ContainerBlocklyElement extends BlocklyElement {
         }
         let totalInnerBlockHeight = 0;
         let block = this._innerBlocks[position];
-        while(block) {
+        while (block) {
             totalInnerBlockHeight += block.height;
             block = block.nextBlock;
         }
@@ -109,11 +109,16 @@ class ContainerBlocklyElement extends BlocklyElement {
 
     render() {
         super.render();
-        if (this._innerBlocks[1]) {
-            const totalHeight = this.totalInnerBlockHeight(0);
-            this._innerBlocks[1].y = (totalHeight > 0 ? totalHeight : 24) + 48 * 2;
-            this._innerBlocks[1].updateTransform();
-        }
+        let totalY = 48;
+        this._innerBlocks.forEach((nextBlock) => {
+            while (nextBlock) {
+                nextBlock.y = nextBlock.prevBlock === this ? totalY : nextBlock.prevBlock.height;
+                nextBlock.updateTransform();
+                totalY += nextBlock.height;
+                nextBlock = nextBlock.nextBlock;
+            }
+            totalY += 48;
+        });
     }
 
     get height() {
@@ -142,7 +147,7 @@ class ContainerBlocklyElement extends BlocklyElement {
             while (n) {
                 n.absX = n.prevBlock._absX + n.x;
                 n = n._nextBlock;
-            }    
+            }
         }
     }
 
@@ -153,7 +158,7 @@ class ContainerBlocklyElement extends BlocklyElement {
             while (n) {
                 n.absY = n.prevBlock._absY + n.y;
                 n = n._nextBlock;
-            }    
+            }
         }
     }
 
@@ -215,7 +220,7 @@ class InitialBlocklyElement extends ContainerBlocklyElement {
             text.innerHTML = '最初だけ';
             g.appendChild(text);
             element.appendChild(g);
-            return element;    
+            return element;
         } else {
             return this._element;
         }
@@ -229,7 +234,7 @@ class IfBlocklyElement extends ContainerBlocklyElement {
     getNumberOfEntry() {
         return Math.max(1, this._innerBlocks.length);
     }
-    
+
     d() {
         const totalInnerBlockHeight1 = this.totalInnerBlockHeight(0);
         const totalInnerBlockHeight2 = 0; //this.totalInnerBlockHeight(1);

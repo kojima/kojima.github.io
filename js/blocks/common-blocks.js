@@ -200,6 +200,14 @@ class BlocklyElement {
 
     render() {
         this.element.querySelector('path').setAttribute('d', this.d());
+        let prevBlock = this.prevBlock;
+        let rootBlock = null;
+        while (prevBlock) {
+            if (!prevBlock.prevBlock) rootBlock = prevBlock;
+            prevBlock = prevBlock.prevBlock;
+
+        }
+        rootBlock && rootBlock.render();
     }
 
     get height() {
