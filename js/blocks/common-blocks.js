@@ -196,7 +196,7 @@ class BlocklyElement {
 
     handleMutationObserverEvent() {
         /* Do nothing here */
-    }    
+    }
 
     render() {
         this.element.querySelector('path').setAttribute('d', this.d());
@@ -217,7 +217,7 @@ class BlocklyElement {
     acceptable(block) {
         return this.y > block.y
             ? this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600
-            : this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600; 
+            : this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600;
     }
 
     appendBlock(block) {

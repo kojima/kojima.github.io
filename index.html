@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>BLE | LWBS (LED Wrist Band Service)</title>
+    <script type="text/javascript" src="js/ui.js"></script>
     <script type="text/javascript" src="js/ble.js"></script>
     <script type="text/javascript" src="js/blocks/block-editor.js"></script>
     <script type="text/javascript" src="js/blocks/common-blocks.js"></script>
@@ -15,6 +16,7 @@
     <script type="text/javascript" src="js/blocks/input-blocks.js"></script>
     <script type="text/javascript" src="js/blocks/variable-blocks.js"></script>
     <script type="text/javascript" src="js/utils.js"></script>
+    <script src="https://kit.fontawesome.com/62ada716bf.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
     <style>
         #log {
@@ -32,9 +34,8 @@
 </head>
 
 <body>
-    <button onclick="connectToBle()">Connect</button>
-    <button onclick="disconnectFromBle()">Disconnect</button>
-    <button onclick="reconnectToBle()">Reconnect</button>
+    <button id="connect" onclick="connectToBle()">Connect</button>
+    <button id="disconnect" onclick="disconnectFromBle()" disabled>Disconnect</button>
     <!--
         <div>LED:
             <button onclick="turnOnLed()">ON</button>
@@ -51,17 +52,28 @@
         Brightness:
         <input type="range" id="brightness" min="0" max="255" value="255" onchange="handleSliderChanged()">
     </div>
+    <div id="button_wrapper">
+        <span>Button state:</span><span id="push_button" onmousedown="handleButtonDown()" onmouseup="handleButtonUp()"
+            onmouseleave="handleButtonUp()"></span>
+    </div>
     <!--
-        <div>
-            Send text:
-            <input type="text" id="text_value" />
-            <button onclick="sendText()">Send</button>
-        </div>
-        -->
+    <div>
+        Send text:
+        <input type="text" id="text_value" />
+        <button onclick="sendText()">Send</button>
+    </div>
+    -->
+
     <div id="log">
     </div>
 
-    <div>
+    <div id="editor_wrapper">
+        <div id="tab_wrapper">
+            <ul id="tab_list">
+                <li></li>
+            </ul>
+            <span id="add_tab_button"><i class="fa-solid fa-circle-plus"></i></span>
+        </div>
         <svg width="1280" height="640">
             <rect x="0" , y="0" width="100%" height="100%" fill="#eee"></rect>
         </svg>

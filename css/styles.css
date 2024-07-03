@@ -3,8 +3,83 @@
     padding: 0;
 }
 
-svg {
+#button_wrapper {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 8px;
     margin-top: 24px;
+}
+
+#push_button {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    background-color: #ddd;
+    border: 1px solid #aaa;
+}
+
+#push_button.down {
+    background-color: #ff6666;
+    border: 1px solid #ff4444;
+}
+
+#tab_wrapper {
+    display: flex;
+    gap: 8px;
+    margin: 0 12px;
+    width: calc(100% - 24px);
+    justify-content: left;
+    align-items: center;
+}
+
+#tab_list {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 2px;
+    max-width: calc(100% - 32px);
+}
+
+#tab_list li {
+    list-style-type: none;
+    display: flex;
+    height: 2em;
+    background-color: #eee;
+    border: 1px solid #aaa;
+    width: 5em;
+    justify-content: right;
+    align-items: center;
+    padding: 0px 6px;
+    box-sizing: border-box;
+}
+
+#tab_list li .delete-tab-button {
+    cursor: pointer;
+    user-select: none;
+}
+
+#tab_list li .delete-tab-button .fa-circle-xmark,
+#add_tab_button .fa-circle-plus {
+    color: #999;
+}
+
+#tab_list li .delete-tab-button:hover .fa-circle-xmark,
+#add_tab_button:hover .fa-circle-plus {
+    color: #555;
+}
+
+*.hidden {
+    display: none;
+}
+
+#editor_wrapper {
+    margin-top: 24px;
+}
+
+svg {
+    margin-top: 4px;
 }
 
 svg,

@@ -40,8 +40,8 @@ window.addEventListener('mousemove', (e) => {
                 const block = blocks[id];
                 if (!Editor.acceptorBlock && block.acceptable(Editor.selectedBlock)) {
                     Editor.acceptorBlock = block;
-                }            
-            });    
+                }
+            });
         }
     } else if (Editor.prevPoint.x && Editor.prevPoint.y) {
         e.preventDefault();
@@ -75,7 +75,7 @@ window.addEventListener('mouseup', (e) => {
     document.querySelector('svg rect').classList.remove('moving');
 });
 
-window.onload = () => {
+window.addEventListener('load', () => {
     const svg = document.querySelector('svg');
     Editor.canvas = svg;
 
@@ -86,7 +86,6 @@ window.onload = () => {
                 mutation.addedNodes.forEach((node) => {
                     const id = node.getAttribute('id');
                     blocks[id] && blocks[id].handleMutationObserverEvent();
-                    console.log(node, id, blocks, blocks[id]);    
                 });
             }
         }
@@ -101,6 +100,7 @@ window.onload = () => {
     const commandBlock4 = new CommandBlocklyElement(100, 0);
     const loopBlock = new LoopBlocklyElement(300, 0);
     const ifBlock = new IfBlocklyElement(500, 200);
+    const foreverBlock = new ForeverBlocklyElement(500, 500);
     const onButtonPushedBlock = new OnButtonPushedBlocklyElement(500, 300);
 
     blocks[initBlock.id] = initBlock;
@@ -110,6 +110,7 @@ window.onload = () => {
     blocks[commandBlock4.id] = commandBlock4;
     blocks[loopBlock.id] = loopBlock;
     blocks[ifBlock.id] = ifBlock;
+    blocks[foreverBlock.id] = foreverBlock;
     blocks[onButtonPushedBlock.id] = onButtonPushedBlock;
 
     svg.appendChild(initBlock.element);
@@ -119,6 +120,7 @@ window.onload = () => {
     svg.appendChild(commandBlock4.element);
     svg.appendChild(loopBlock.element);
     svg.appendChild(ifBlock.element);
+    svg.appendChild(foreverBlock.element);
     svg.appendChild(onButtonPushedBlock.element);
 
     document.querySelector('svg rect').addEventListener('mousedown', (e) => {
@@ -142,4 +144,4 @@ window.onload = () => {
             block.updateTransform();
         });
     };
-};
+});

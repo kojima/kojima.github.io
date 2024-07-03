@@ -2,11 +2,11 @@
  * Reference: https://googlechrome.github.io/samples/web-bluetooth/
  */
 let bleDevice = null;
-let ledCharacteristic = null;
+let codeCharacteristic = null;
+let buttonCharacteristic = null;
 const connectToBle = async () => {
     try {
         log('Requesting any Bluetooth Device...');
-        //const optionalServices = ['00001553-1212-efde-1523-785feabcd123'];
         bleDevice = await navigator.bluetooth.requestDevice(
             { filters: [{ services: ["00001553-1212-efde-1523-785feabcd123"] }] }
         );
@@ -25,26 +25,72 @@ const connectToBle = async () => {
             log('> Service: ' + service.uuid);
             const characteristics = await service.getCharacteristics();
 
-            characteristics.forEach(characteristic => {
+            characteristics.forEach(async (characteristic) => {
                 log('>> Characteristic: ' + characteristic.uuid + ' ' +
                     getSupportedProperties(characteristic));
                 if (characteristic.uuid === '00001554-1212-efde-1523-785feabcd123') {
-                    ledCharacteristic = characteristic;
+                    codeCharacteristic = characteristic;
+                } else if (characteristic.uuid === '00001555-1212-efde-1523-785feabcd123') {
+                    log('> Register a notification handler');
+                    buttonCharacteristic = characteristic;
+                    await buttonCharacteristic.startNotifications();
+                    buttonCharacteristic.addEventListener('characteristicvaluechanged',
+                        handleButtonNotifications);
                 }
             });
         }
+        document.getElementById('connect').disabled = true;
+        document.getElementById('disconnect').disabled = false;
     } catch (error) {
         log('Argh! ' + error);
     }
 };
 
-const disconnectFromBle = () => {
+let buttonPushed = false;
+
+const handleButtonDown = () => {
+    const button = document.getElementById('push_button');
+    button.classList.add('down');
+};
+
+const handleButtonUp = () => {
+    const button = document.getElementById('push_button');
+    button.classList.remove('down');
+};
+
+const handleButtonNotifications = (event) => {
+    const value = event.target.value;
+    const intValue = value.getUint8(0);
+
+    if (intValue === 1 && !buttonPushed) {
+        buttonPushed = true;
+        handleButtonDown();
+    } else if (intValue === 0 && buttonPushed) {
+        buttonPushed = false;
+        handleButtonUp();
+    }
+    log(`> button: ${intValue}`);
+}
+
+const disconnectFromBle = async () => {
     if (!bleDevice) {
         return;
     }
     log('Disconnecting from Bluetooth Device...');
     if (bleDevice.gatt.connected) {
+        if (buttonCharacteristic) {
+            try {
+                await buttonCharacteristic.stopNotifications();
+                log('> Notifications stopped');
+                buttonCharacteristic.removeEventListener('characteristicvaluechanged',
+                    handleButtonNotifications);
+            } catch (error) {
+                log('Argh! ' + error);
+            }
+        }
         bleDevice.gatt.disconnect();
+        document.getElementById('connect').disabled = false;
+        document.getElementById('disconnect').disabled = true;
     } else {
         log('> Bluetooth Device is already disconnected');
     }
@@ -54,21 +100,6 @@ const onDisconnected = (event) => {
     // Object event.target is Bluetooth Device getting disconnected.
     log('> Bluetooth Device disconnected');
 };
-
-function reconnectToBle() {
-    if (!bleDevice) {
-        return;
-    }
-    if (bleDevice.gatt.connected) {
-        log('> Bluetooth Device is already connected');
-        return;
-    }
-    try {
-        connectToBle();
-    } catch (error) {
-        log('Argh! ' + error);
-    }
-}
 
 
 /* Utils */
@@ -89,51 +120,51 @@ const log = (str) => {
 };
 
 const turnOnLed = async () => {
-    if (!ledCharacteristic) return;
+    if (!codeCharacteristic) return;
     let value = new Uint8Array([1]);
-    const ret = await ledCharacteristic.writeValueWithResponse(value);
+    const ret = await codeCharacteristic.writeValueWithResponse(value);
     log(ret);
 };
 
 const turnOffLed = async () => {
-    if (!ledCharacteristic) return;
+    if (!codeCharacteristic) return;
     const encoder = new TextEncoder();
     const value = encoder.encode("off");
-    const ret = await ledCharacteristic.writeValueWithResponse(value);
+    const ret = await codeCharacteristic.writeValueWithResponse(value);
     log(ret);
 };
 
 const turnRedLed = async () => {
-    if (!ledCharacteristic) return;
+    if (!codeCharacteristic) return;
     const encoder = new TextEncoder();
     const value = encoder.encode("red");
-    const ret = await ledCharacteristic.writeValueWithResponse(value);
+    const ret = await codeCharacteristic.writeValueWithResponse(value);
     log(ret);
 };
 
 const turnGreenLed = async () => {
-    if (!ledCharacteristic) return;
+    if (!codeCharacteristic) return;
     const encoder = new TextEncoder();
     const value = encoder.encode("green");
-    const ret = await ledCharacteristic.writeValueWithResponse(value);
+    const ret = await codeCharacteristic.writeValueWithResponse(value);
     log(ret);
 };
 
 const turnBlueLed = async () => {
-    if (!ledCharacteristic) return;
+    if (!codeCharacteristic) return;
     const encoder = new TextEncoder();
     const value = encoder.encode("blue");
-    const ret = await ledCharacteristic.writeValueWithResponse(value);
+    const ret = await codeCharacteristic.writeValueWithResponse(value);
     log(ret);
 };
 
 const sendText = async () => {
-    if (!ledCharacteristic) return;
+    if (!codeCharacteristic) return;
     const str = document.getElementById('text_value').value;
     if (str.length === 0) return;
     const encoder = new TextEncoder();
     const value = encoder.encode(str);
-    const ret = await ledCharacteristic.writeValueWithResponse(value);
+    const ret = await codeCharacteristic.writeValueWithResponse(value);
     log(ret);
 };
 
@@ -141,7 +172,7 @@ const handleSliderChanged = async () => {
     const brightness = document.getElementById('brightness').value;
     const encoder = new TextEncoder();
     const value = encoder.encode(brightness);
-    const ret = await ledCharacteristic.writeValueWithResponse(value);
+    const ret = await codeCharacteristic.writeValueWithResponse(value);
     log(brightness);
 };
 
