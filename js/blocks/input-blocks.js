@@ -1,4 +1,4 @@
-class OnButtonPushedBlocklyElement extends ContainerBlocklyElement {
+class OnShakedBlocklyElement extends ContainerBlocklyElement {
     _stroke = '#9f009f';
     _fill = '#d400d4';
     _prependable = false;
@@ -24,7 +24,7 @@ class OnButtonPushedBlocklyElement extends ContainerBlocklyElement {
             text.setAttribute('dominant-baseline', 'central');
             text.setAttribute('x', 0);
             text.setAttribute('y', 9.5);
-            text.innerHTML = 'ボタンが押されたとき';
+            text.innerHTML = '揺さぶられたとき';
             g.appendChild(text);
 
             const element = super.element;

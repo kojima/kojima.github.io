@@ -3,6 +3,27 @@
     padding: 0;
 }
 
+html, body {
+    height: 100%;
+}
+
+@font-face {
+    font-family: MADE_Tommy_Soft;
+    src: url("fonts/MADE_Tommy_Soft_Bold_PERSONAL_USE.otf");
+}
+
+#title {
+    font-family: 'MADE_Tommy_Soft';
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+#title .text {
+    font-size: 1.6rem;
+}
+
 #button_wrapper {
     display: flex;
     justify-content: left;
@@ -74,32 +95,42 @@
     display: none;
 }
 
-#editor_wrapper {
-    margin-top: 24px;
+.editor-wrapper {
+    display: none;
+    height: 100%;
 }
 
-svg {
-    margin-top: 4px;
+.editor-wrapper.selected {
+    display: block;
 }
 
-svg,
-svg * {
+#blockly_editor {
+    background-color: #eee;
+    height: 100%;
+}
+
+#blockly_editor,
+#blockly_editor * {
     user-select: none;
 }
 
-svg g:not(.grabbing):hover {
+#blockly_editor g {
+    z-index: 1;
+}
+
+#blockly_editor g:not(.grabbing):hover {
     cursor: grab;
 }
 
-svg g.grabbing {
+#blockly_editor g.grabbing {
     cursor: grabbing;
 }
 
-svg g.moving {
+#blockly_editor g.moving {
     opacity: 0.75;
 }
 
-svg rect.moving {
+#blockly_editor rect.moving {
     cursor: all-scroll;
 }
 
@@ -107,4 +138,225 @@ text.blocklyText {
     font: 600 12pt "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
     fill: #fff;
     stroke: none;
+}
+
+#main {
+    height: 100%;
+}
+
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    background-color: #3454d1;
+    color: #fff;
+    padding: 0 24px;
+}
+
+#container {
+    display: flex;
+    width: 100%;
+    height: calc(100% - 136px);
+}
+
+#footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    height: 80px;
+    padding: 0 24px;
+    border-top: 2px solid #ddd;
+    box-sizing: border-box;
+    gap: 16px;
+}
+
+#editor_switch {
+    display: flex;
+    position: relative;
+    height: 42px;
+    background: rgba(27,28,29,.4);
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    border: 3px solid rgba(27, 28, 29, .2);
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+#editor_switch #slider {
+    background-color: #fff;
+    height: 36px;
+    width: 160px;
+    position: absolute;
+    top: 0;
+    border-radius: 18px;
+    transition: left 0.3s ease-in-out;
+}
+
+#editor_switch #slider.left {
+    left: 0;
+}
+
+#editor_switch #slider.right {
+    left: calc(320px - 160px);
+}
+
+#editor_switch .option {
+    width: 160px;
+    text-align: center;
+    z-index: 1;
+    font-weight: 500;
+    color: #fff;
+    transition: color 0.3s ease-in-out;
+}
+
+#editor_switch .text {
+    margin-left: 0.5em;
+    user-select: none;
+}
+
+#editor_switch .option.selected {
+    color: #3454d1;
+}
+
+#left_pane {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 400px;
+    padding-top: 32px;
+    background-color: #fdfdff;
+    box-sizing: border-box;
+}
+
+#right_pane {
+    position: relative;
+    width: calc(100% - 400px);
+    height: 100%;
+    box-sizing: border-box;
+    border-left: 2px solid #ddd;
+}
+
+#simulator {
+    width: 320px;
+    height: 320px;
+}
+
+#simulator > svg {
+    width: 100%;
+    height: 100%;
+}
+
+#arduino_editor_wrapper {
+    overflow: auto;
+}
+
+#arduino_code {
+    transform-origin: top left;
+}
+
+#copy_popup {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    background-color: #3454d1;
+    color: #fff;
+    right: 16px;
+    bottom: -9999px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    opacity: 0;
+    padding: 2px;
+}
+
+#copy_popup_inner {
+    border: 2px solid #fff;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    border-radius: 6px;
+}
+
+@keyframes popup {
+    0% {
+        bottom: 0;
+        opacity: 0;
+    }
+    25%, 75% {
+        bottom: 16px;
+        opacity: 1;
+    }
+    100% {
+        bottom: 0;
+        opacity: 0;
+    }
+}
+
+#copy_popup.show {
+    animation-duration: 3s;
+    animation-name: popup;
+}
+
+.color {
+    display: inline-block !important;
+    color: transparent !important;
+    width: 32px !important;
+    height: 32px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    bottom: 16px;
+    right: 16px;
+    border-radius: 8px;
+    transition: opacity ease-in-out 0.3s;
+}
+
+.wrapper.hidden {
+    opacity: 0;
+}
+
+.wrapper.deep-hidden {
+    display: none;
+}
+
+.button {
+    cursor: pointer;
+    color: #fff;
+    background-color: #3454d1;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    width: 56px;
+    height: 56px;
+}
+
+.button:hover {
+    background-color: #2445c7;
+}
+
+.button:active {
+    background-color: #2742ab;
+}
+
+#zoom_wrapper > .button:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#zoom_wrapper > .button:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }

@@ -8,13 +8,7 @@ class ContainerBlocklyElement extends BlocklyElement {
     acceptable(block) {
         if (this.y > block.y) {
             // check for prependablity
-            //return this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600;
-            const tmp = this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600;
-            if (tmp) {
-                const d = new Date();
-                //console.log(d.getMilliseconds(), this, 'prependable');
-                return tmp;
-            }
+            return this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600;
         } else {
             // check for insertable
             const numOfEntry = this.getNumberOfEntry();
@@ -23,30 +17,21 @@ class ContainerBlocklyElement extends BlocklyElement {
                 const acceptable = Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + totalHeight), 2) < 1600;
                 if (acceptable) {
                     const d = new Date();
-                    //console.log(d.getMilliseconds(), this, 'insertable');
                     return true;
                 };
                 totalHeight += 48 + this.totalInnerBlockHeight(i);
             }
             // check for appendability
-            //return this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600; 
-            const tmp = this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600;
-            if (tmp) {
-                const d = new Date();
-                //console.log(d.getMilliseconds(), this, 'appendable');
-                return tmp;
-            }
+            return this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600;
         }
     }
 
     appendBlock(block) {
         if (this.acceptable(block)) {
             if (this.y > block.y) {
-                // check for prependablity
-                //return this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600;
-                const tmp = this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600;
-                if (tmp) {
+                if (this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600) {
                     super.appendBlock(block);
+                    console.log(this._prevBlock, this._nextBlock);
                 }
             } else {
                 // check for insertable
@@ -62,6 +47,7 @@ class ContainerBlocklyElement extends BlocklyElement {
                         if (this._innerBlocks[i]) {
                             block.nextBlock = this._innerBlocks[i];
                             this._innerBlocks[i].prevBlock = block;
+                            this._innerBlocks[i].x = 0;
                             this._innerBlocks[i].y += block.height;
                             this._innerBlocks[i].updateTransform();
                             block._element.appendChild(this._innerBlocks[i]._element);
@@ -69,14 +55,18 @@ class ContainerBlocklyElement extends BlocklyElement {
                         this._innerBlocks[i] = block;
                         this._element.appendChild(block._element);
                         this.render();
+                        if (this._nextBlock) {
+                            this._nextBlock.y = this.height;
+                            this._nextBlock.updateTransform();
+                        }
+                        return;
                     };
                     totalHeight += 48 + this.totalInnerBlockHeight(i);
                 }
                 // check for appendability
-                //return this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600; 
-                const tmp = this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600;
-                if (tmp) {
+                if (this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600) {
                     super.appendBlock(block);
+                    console.log(this._prevBlock, this._nextBlock);
                 }
             }
         }
@@ -87,13 +77,8 @@ class ContainerBlocklyElement extends BlocklyElement {
         if (!(position < numOfEntry)) {
             throw Error(`position must be under ${numOfEntry}: ${position}`);
         }
-        let totalInnerBlockHeight = 0;
         let block = this._innerBlocks[position];
-        while (block) {
-            totalInnerBlockHeight += block.height;
-            block = block.nextBlock;
-        }
-        return totalInnerBlockHeight;
+        return block ? block.cascadingHeight : 0;
     }
 
     unsetInnerBlock(innerBlock) {
@@ -105,6 +90,11 @@ class ContainerBlocklyElement extends BlocklyElement {
             }
         }
         this.render();
+        if (this._nextBlock) {
+            this._nextBlock.y = this.height;
+            this._nextBlock.updateTransform();
+        }
+        innerBlock.nextBlock = null;
     }
 
     render() {
@@ -142,47 +132,19 @@ class ContainerBlocklyElement extends BlocklyElement {
 
     set x(newX) {
         super.x = newX
+        // trigger absX update of inner blocks
         for (let i = 0; i < this._innerBlocks.length; i++) {
-            let n = this._innerBlocks[i];
-            while (n) {
-                n.absX = n.prevBlock._absX + n.x;
-                n = n._nextBlock;
-            }
+            let innerBlock = this._innerBlocks[i];
+            if (innerBlock) innerBlock.x = innerBlock._x;
         }
     }
 
     set y(newY) {
         super.y = newY
+        // trigger absY update of inner blocks
         for (let i = 0; i < this._innerBlocks.length; i++) {
-            let n = this._innerBlocks[i];
-            while (n) {
-                n.absY = n.prevBlock._absY + n.y;
-                n = n._nextBlock;
-            }
-        }
-    }
-
-
-    get absX() {
-        return this._absX;
-    }
-
-    get absY() {
-        return this._absY;
-    }
-    set absX(newAbsX) {
-        super._absX = newAbsX;
-        for (let i = 0; i < this._innerBlocks.length; i++) {
-            let n = this._innerBlocks[i];
-            if (n) n.absX = n.x + newAbsX;
-        }
-    }
-
-    set absY(newAbsY) {
-        super._absY = newAbsY;
-        for (let i = 0; i < this._innerBlocks.length; i++) {
-            let n = this._innerBlocks[i];
-            if (n) n.absY = n.y + newAbsY;
+            let innerBlock = this._innerBlocks[i];
+            if (innerBlock) innerBlock.y = innerBlock._y;
         }
     }
 }

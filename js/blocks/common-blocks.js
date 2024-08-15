@@ -47,14 +47,24 @@ class BlocklyElement {
         throw Error('height getter not implemented error')
     }
 
+    get cascadingHeight() {
+        let height = this.height;
+        let nextBlock = this._nextBlock;
+        while (nextBlock) {
+            height += nextBlock.height;
+            nextBlock = nextBlock._nextBlock;
+        }
+        return height;
+    }
+
     get translateX() {
-        const ratio = this.prevBlock ? 1 : Editor.scale / defaultScale;
+        const ratio = this.prevBlock ? 1 : Editor.blocklyScale / defaultScale;
         const halfOfWidth = parseInt(Editor.canvas.getAttribute('width')) * 0.5;
         return this._x * ratio - halfOfWidth * (ratio - 1);
     }
 
     get translateY() {
-        const ratio = this.prevBlock ? 1 : Editor.scale / defaultScale;
+        const ratio = this.prevBlock ? 1 : Editor.blocklyScale / defaultScale;
         const halfOfHeight = parseInt(Editor.canvas.getAttribute('height')) * 0.5;
         return this._y * ratio - halfOfHeight * (ratio - 1);
     }
@@ -68,35 +78,21 @@ class BlocklyElement {
     }
 
     get strokeWidth() {
-        return 1.5 / Editor.scale;
+        return 1.5 / Editor.blocklyScale;
     }
 
     set x(newX) {
         this._x = newX;
         this._absX = this._x + (this.prevBlock ? this.prevBlock._absX : 0);
-        let n = this._nextBlock;
-        while (n) {
-            n._absX = n.prevBlock._absX + n.x;
-            n = n._nextBlock;
-        }
+        // trigger absX update of decendants
+        if (this._nextBlock) this._nextBlock.x = this._nextBlock._x;
     }
 
     set y(newY) {
         this._y = newY;
         this._absY = this._y + (this.prevBlock ? this.prevBlock._absY : 0);
-        let n = this._nextBlock;
-        while (n) {
-            n._absY = n.prevBlock._absY + n.y;
-            n = n._nextBlock;
-        }
-    }
-
-    set absX(newAbsX) {
-        this._absX = newAbsX;
-    }
-
-    set absY(newAbsY) {
-        this._absY = newAbsY;
+        // trigger absY update of decendants
+        if (this._nextBlock) this._nextBlock.y = this._nextBlock._y;
     }
 
     set prevBlock(block) {
@@ -120,7 +116,7 @@ class BlocklyElement {
         } else {
             transforms.getItem(0).setTranslate(this.translateX, this.translateY);
         }
-        const s = this.prevBlock ? 1 : Editor.scale;
+        const s = this.prevBlock ? 1 : Editor.blocklyScale;
         if (transforms.length === 1 || transforms.getItem(1).type !== SVGTransform.SVG_TRANSFORM_SCALE) {
             const scale = svg.createSVGScale();
             translate.setScale(s, s);
@@ -142,7 +138,7 @@ class BlocklyElement {
         g.setAttribute('id', this._id);
         g.setAttribute('stroke', this._stroke);
         g.setAttribute('fill', this._fill);
-        g.setAttribute('transform', `translate(${this.x}, ${this.y}) scale(${Editor.scale}, ${Editor.scale})`);
+        g.setAttribute('transform', `translate(${this.x}, ${this.y}) scale(${Editor.blocklyScale}, ${Editor.blocklyScale})`);
         g.setAttribute('stroke-width', this.strokeWidth);
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('d', this.d());
@@ -160,11 +156,7 @@ class BlocklyElement {
             e.stopPropagation();
             if (Editor.acceptorBlock) {
                 Editor.acceptorBlock.appendBlock(this);
-                let prevBlock = this.prevBlock;
-                while (prevBlock) {
-                    prevBlock.render();
-                    prevBlock = prevBlock.prevBlock;
-                }
+                this._prevBlock && this._prevBlock.render();
             }
             this.handleMouseUp();
             Editor.selectedBlock = null;
@@ -181,13 +173,13 @@ class BlocklyElement {
     }
 
     applyPositionDiff(diffX, diffY) {
-        this.x += diffX * defaultScale / Editor.scale;
-        this.y += diffY * defaultScale / Editor.scale;
+        this.x += diffX * defaultScale / Editor.blocklyScale;
+        this.y += diffY * defaultScale / Editor.blocklyScale;
     }
 
     handleMouseMove(diffX, diffY) {
         if (!this._element.classList.contains('moving')) {
-            document.querySelector('svg').appendChild(this._element);
+            document.querySelector('#blockly_editor').appendChild(this._element);
         }
         this._element.classList.add('moving');
         this.applyPositionDiff(diffX, diffY);
@@ -200,14 +192,11 @@ class BlocklyElement {
 
     render() {
         this.element.querySelector('path').setAttribute('d', this.d());
-        let prevBlock = this.prevBlock;
-        let rootBlock = null;
-        while (prevBlock) {
-            if (!prevBlock.prevBlock) rootBlock = prevBlock;
-            prevBlock = prevBlock.prevBlock;
-
+        this._prevBlock && this.prevBlock.render();
+        if (this._nextBlock) {
+            this._nextBlock.y = this.height;
+            this._nextBlock.updateTransform();
         }
-        rootBlock && rootBlock.render();
     }
 
     get height() {
@@ -238,14 +227,9 @@ class BlocklyElement {
             b.x = 0;
             b.y = this.height;
             b.updateTransform();
-            let prevBlock = block.prevBlock;
-            while (prevBlock) {
-                prevBlock.render();
-                prevBlock = prevBlock.prevBlock;
-            }
+            this._prevBlock && this._prevBlock.render();
         }
     }
-
 
     d() {
         return 'm 0,0  m 0,4 a 4 4 0 0,1 4,-4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  h 235.984375 a 4 4 0 0,1 4,4  v 8  V 44  V 44 a 4 4 0 0,1 -4,4  h -235.984375  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,1 -4,-4 z';
