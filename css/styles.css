@@ -5,6 +5,7 @@
 
 html, body {
     height: 100%;
+    overflow: hidden;
 }
 
 @font-face {
@@ -256,6 +257,12 @@ text.blocklyText {
 
 #arduino_code {
     transform-origin: top left;
+    white-space: pre;
+    tab-size: 2;
+}
+
+#arduino_code_template {
+    display: none;
 }
 
 #copy_popup {

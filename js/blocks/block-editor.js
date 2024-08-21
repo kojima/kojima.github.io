@@ -5,12 +5,29 @@
 const defaultScale = 1.0;
 class Editor {
     static canvas = null;
+    static triggerBlock = null;
     static selectedBlock = null;
     static prevPoint = { x: null, y: null };
     static blocklyScale = defaultScale;
     static offset = { x: 0, y: 0 };
     static acceptorBlock = null;
     static arduinoScale = defaultScale;
+    static getIndex = () => {
+        return Editor._index.shift();
+    };
+    static returnBackIndex = (index) => {
+        Editor._index.unshift(index);
+    };
+    static resetIndex = () => {
+        Editor._index = [];
+        const vals = ['i', 'j', 'k', 'l', 'm', 'n'];
+        for (let i = 1; i <= 10; i++) {
+            vals.forEach((val) => {
+                i === 1 ? Editor._index.push(val) : Editor._index.push(`${val}${i}`);
+            })
+        }
+    };
+    static _index = [];
 }
 
 const blocks = {};
@@ -98,37 +115,40 @@ window.addEventListener('load', () => {
     observer.observe(svg, config);
 
     //const initBlock = new InitialBlocklyElement(0, 0);
-    const commandBlock1 = new CommandBlocklyElement(20, 20);
-    const commandBlock2 = new VariableBlocklyElement(30, 30);
+    const pauseBlocklyElement = new PauseBlocklyElement(20, 20);
+    const pauseBlocklyElement2 = new PauseBlocklyElement(80, 20);
+    const turnOnAllLedsWithColorsBlocklyElement = new TurnOnAllLedsWithColorsBlocklyElement(30, 200);
     const commandBlock3 = new NeopixelBlocklyElement(40, 40);
-    const commandBlock4 = new CommandBlocklyElement(100, 0);
+    const turnOffAllLedBlocklyElement = new TurnOffAllLedsBlocklyElement(100, 0);
     const loopBlock1 = new LoopBlocklyElement(300, 0);
     const loopBlock2 = new LoopBlocklyElement(400, 0);
     //const ifBlock = new IfBlocklyElement(500, 200);
     //const foreverBlock = new ForeverBlocklyElement(500, 500);
-    const onButtonPushedBlock = new OnShakedBlocklyElement(500, 300);
+    Editor.triggerBlock = new OnShakedBlocklyElement(200, 300);
 
     //blocks[initBlock.id] = initBlock;
-    blocks[commandBlock1.id] = commandBlock1;
-    blocks[commandBlock2.id] = commandBlock2;
+    blocks[pauseBlocklyElement.id] = pauseBlocklyElement;
+    blocks[pauseBlocklyElement2.id] = pauseBlocklyElement2;
+    blocks[turnOnAllLedsWithColorsBlocklyElement.id] = turnOnAllLedsWithColorsBlocklyElement;
     blocks[commandBlock3.id] = commandBlock3;
-    blocks[commandBlock4.id] = commandBlock4;
+    blocks[turnOffAllLedBlocklyElement.id] = turnOffAllLedBlocklyElement;
     blocks[loopBlock1.id] = loopBlock1;
     blocks[loopBlock2.id] = loopBlock2;
     //blocks[ifBlock.id] = ifBlock;
     //blocks[foreverBlock.id] = foreverBlock;
-    blocks[onButtonPushedBlock.id] = onButtonPushedBlock;
+    blocks[Editor.triggerBlock.id] = Editor.triggerBlock;
 
     //svg.appendChild(initBlock.element);
-    svg.appendChild(commandBlock2.element);
+    svg.appendChild(turnOnAllLedsWithColorsBlocklyElement.element);
     svg.appendChild(commandBlock3.element);
-    svg.appendChild(commandBlock1.element);
-    svg.appendChild(commandBlock4.element);
+    svg.appendChild(pauseBlocklyElement.element);
+    svg.appendChild(pauseBlocklyElement2.element);
+    svg.appendChild(turnOffAllLedBlocklyElement.element);
     svg.appendChild(loopBlock1.element);
     svg.appendChild(loopBlock2.element);
     //svg.appendChild(ifBlock.element);
     //svg.appendChild(foreverBlock.element);
-    svg.appendChild(onButtonPushedBlock.element);
+    svg.appendChild(Editor.triggerBlock.element);
 
     document.querySelector('#blockly_editor rect').addEventListener('mousedown', (e) => {
         Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;

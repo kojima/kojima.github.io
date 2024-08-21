@@ -45,4 +45,32 @@ class OnShakedBlocklyElement extends ContainerBlocklyElement {
         this._width = rect.width + 100;
         this.render();
     }
+
+    generateCode(level) {
+        const indent = this.generateIndent(level);
+        let code = indent + '// 揺さぶられたとき\n';
+        code += indent + 'void handleOnShaked() {\n';
+        this._innerBlocks.forEach((nextBlock) => {
+            while (nextBlock) {
+                code += nextBlock.generateCode(level + 1);
+                nextBlock = nextBlock.nextBlock;
+            }
+        });
+        return code + indent + '}\n';
+    }
+
+
+    _currentInnerBlock = null;
+    executeSimulator(elapsedTime) {
+        if (!this._currentInnerBlock) {
+            if (!this._innerBlocks[0]) return [this, true];
+            this._currentInnerBlock = this._innerBlocks[0];
+        }
+        const [block, done] = this._currentInnerBlock.executeSimulator(elapsedTime);
+        if (done) {
+            this._currentInnerBlock = this._currentInnerBlock.nextBlock;
+            console.log('Next', this._currentInnerBlock);
+        }
+        return [this, !this._currentInnerBlock];
+    }
 }

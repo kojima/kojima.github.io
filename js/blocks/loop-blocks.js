@@ -52,4 +52,40 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
         const extraV = totalInnerBlockHeight > 0 ? totalInnerBlockHeight - 24 : 0;
         return `m 0,0  m 0,4 a 4 4 0 0,1 4,-4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  h 125 a 4 4 0 0,1 4,4  v 8  V 40  V 44 a 4 4 0 0,1 -4,4  H 64  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,0 -4,4  v ${16 + extraV} a 4 4 0 0,0 4,4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  H 173 a 4 4 0 0,1 4,4  V ${76 + extraV}  V ${100 + extraV}  V ${100 + extraV} a 4 4 0 0,1 -4,4  h -125  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,1 -4,-4 z`;
     }
+
+    generateCode(level) {
+        const indent = this.generateIndent(level);
+        const index = Editor.getIndex();
+        let code = indent + `for (int ${index} = 0; ${index} < ${4}; ${index}++) {\n`;
+        this._innerBlocks.forEach((nextBlock) => {
+            while (nextBlock) {
+                code += nextBlock.generateCode(level + 1);
+                nextBlock = nextBlock.nextBlock;
+            }
+        });
+        Editor.returnBackIndex(index);
+        return code + indent + '}\n';
+    }
+
+    _currentInnerBlock = null;
+    _currentIndex = 0;
+    executeSimulator(elapsedTime) {
+        if (!this._currentInnerBlock) {
+            if (!this._innerBlocks[0]) return [this, true];
+            this._currentInnerBlock = this._innerBlocks[0];
+        }
+
+        const [block, done] = this._currentInnerBlock.executeSimulator(elapsedTime);
+        if (done) {
+            this._currentInnerBlock = this._currentInnerBlock.nextBlock;
+        }
+        console.log(done, this._currentInnerBlock, this._currentIndex);
+        if (!this._currentInnerBlock) this._currentIndex += 1;
+        if (this._currentIndex >= 4) {
+            this._currentIndex = 0;
+            return [this, true];
+        } else {
+            return [this, false];
+        }
+    }
 }

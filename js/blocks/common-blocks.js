@@ -161,6 +161,18 @@ class BlocklyElement {
             this.handleMouseUp();
             Editor.selectedBlock = null;
             Editor.prevPoint.x = null, Editor.prevPoint.y = null;
+
+            // Editor.triggerBlock.executeSimulator();
+            window.requestAnimationFrame(step);
+
+            Editor.resetIndex();
+            let code = Editor.triggerBlock.generateCode(0);
+            const codeTemplate = document.getElementById('arduino_code_template').innerHTML;
+            code = codeTemplate.replace('{{ code }}', code);
+            const arduinoCode = document.getElementById('arduino_code');
+            arduinoCode.innerHTML = code;
+            arduinoCode.removeAttribute('data-highlighted');
+            hljs.highlightElement(arduinoCode);
         });
         this._element = g;
 
@@ -231,7 +243,19 @@ class BlocklyElement {
         }
     }
 
-    d() {
-        return 'm 0,0  m 0,4 a 4 4 0 0,1 4,-4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  h 235.984375 a 4 4 0 0,1 4,4  v 8  V 44  V 44 a 4 4 0 0,1 -4,4  h -235.984375  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,1 -4,-4 z';
+    generateIndent(level) {
+        let indent = '';
+        for (let i = 0; i < level; i++) {
+            indent += '\t';
+        }
+        return indent;
     }
-};
+
+    generateCode(level) {
+        throw new Error('generateCode not implemented error');
+    }
+
+    executeSimulator(elapsedTime) {
+        throw new Error('executeSimulator not implemented error');
+    }
+}

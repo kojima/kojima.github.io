@@ -1,4 +1,7 @@
 window.addEventListener('load', () => {
+    const arduinoCode = document.getElementById('arduino_code');
+    hljs.highlightElement(arduinoCode);
+
     /*
     const addButton = document.getElementById('add_tab_button');
     addButton.addEventListener('click', (e) => {
