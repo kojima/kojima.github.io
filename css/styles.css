@@ -368,6 +368,29 @@ text.blocklyText {
     border-bottom-left-radius: 0;
 }
 
-input.color.non-draggable {
+input.color,
+input.repeat-count {
     outline: none;
+    border-style: solid;
+}
+
+input.repeat-count {
+    width: 40px;
+    height: 32px;
+    font-size: 1rem;
+    text-align: center;
+    border-radius: 16px;
+    box-sizing: border-box;
+    border-color: #008000;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  appearance: textfield;
 }

@@ -43,20 +43,91 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
     _stroke = '#008000';
     _fill = '#00aa00';
 
+    _foreignObject = null;
+    _repeatCountInput = null;
+    _repeatCount = 4;
+    _svgText = null;
+
     getNumberOfEntry() {
         return 1;
     }
 
     d() {
+        const extraH = this._repeatCountInput ? Math.max(0, (`${this._repeatCountInput.value}`.length - 1) * 10) : 0;
+        if (this._repeatCountInput) {
+            this._foreignObject.setAttribute('width', 40 + extraH);
+            this._svgText.setAttribute('x', 136 + extraH);
+            this._repeatCountInput.style.width = `${40 + extraH}px`;
+        }
         const totalInnerBlockHeight = this.totalInnerBlockHeight(0);
         const extraV = totalInnerBlockHeight > 0 ? totalInnerBlockHeight - 24 : 0;
-        return `m 0,0  m 0,4 a 4 4 0 0,1 4,-4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  h 125 a 4 4 0 0,1 4,4  v 8  V 40  V 44 a 4 4 0 0,1 -4,4  H 64  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,0 -4,4  v ${16 + extraV} a 4 4 0 0,0 4,4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  H 173 a 4 4 0 0,1 4,4  V ${76 + extraV}  V ${100 + extraV}  V ${100 + extraV} a 4 4 0 0,1 -4,4  h -125  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,1 -4,-4 z`;
+        return `m 0,0  m 0,4 a 4 4 0 0,1 4,-4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  h ${125 + extraH} a 4 4 0 0,1 4,4  v 8  V 40  V 44 a 4 4 0 0,1 -4,4  H 64  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,0 -4,4  v ${16 + extraV} a 4 4 0 0,0 4,4  h 8  c 2,0  3,1  4,2  l 4,4  c 1,1  2,2  4,2  h 12  c 2,0  3,-1  4,-2  l 4,-4  c 1,-1  2,-2  4,-2  H ${173 + extraH} a 4 4 0 0,1 4,4  V ${76 + extraV}  V ${100 + extraV}  V ${100 + extraV} a 4 4 0 0,1 -4,4  h -${125 + extraH}  c -2,0  -3,1  -4,2  l -4,4  c -1,1  -2,2  -4,2  h -12  c -2,0  -3,-1  -4,-2  l -4,-4  c -1,-1  -2,-2  -4,-2  h -8 a 4 4 0 0,1 -4,-4 z`;
+    }
+
+    get element() {
+        if (!this._element) {
+            const element = super.element;
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.setAttribute('transform', 'translate(8, 16.5)');
+
+            const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text1.classList.add('blocklyText');
+            text1.setAttribute('dominant-baseline', 'central');
+            text1.setAttribute('x', 0);
+            text1.setAttribute('y', 9.5);
+            text1.innerHTML = 'くりかえし';
+            g.appendChild(text1);
+
+
+            this._svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            this._svgText.classList.add('blocklyText');
+            this._svgText.setAttribute('dominant-baseline', 'central');
+            this._svgText.setAttribute('x', 136);
+            this._svgText.setAttribute('y', 9.5);
+            this._svgText.innerHTML = '回';
+            g.appendChild(this._svgText);
+
+            element.appendChild(g);
+
+            this._foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+            this._foreignObject.setAttribute('x', 95);
+            this._foreignObject.setAttribute('y', 9.5);
+            this._foreignObject.setAttribute('width', 40);
+            this._foreignObject.setAttribute('height', 32);
+            element.appendChild(this._foreignObject);
+
+            this._repeatCountInput = document.createElement('input');
+            this._repeatCountInput.value = this._repeatCount;
+            this._repeatCountInput.setAttribute('type', 'number');
+            this._repeatCountInput.setAttribute('min', 1);
+            this._repeatCountInput.setAttribute('step', 1);
+            this._repeatCountInput.addEventListener('focus', (e) => {
+                e.target.select();
+            });
+            this._repeatCountInput.addEventListener('input', (e) => {
+                this.render();
+            });
+            this._repeatCountInput.addEventListener('change', (e) => {
+                if (e.target.value.length === 0) {
+                    e.target.value = this._repeatCount;
+                } else {
+                    this._repeatCount = Math.floor(e.target.value);
+                    e.target.value = this._repeatCount;
+                }
+            });
+            this._repeatCountInput.className = 'repeat-count non-draggable';
+            this._foreignObject.appendChild(this._repeatCountInput);
+
+            return element;
+        } else {
+            return this._element;
+        }
     }
 
     generateCode(level) {
         const indent = this.generateIndent(level);
         const index = Editor.getIndex();
-        let code = indent + `for (int ${index} = 0; ${index} < ${4}; ${index}++) {\n`;
+        let code = indent + `for (int ${index} = 0; ${index} < ${this._repeatCount}; ${index}++) {\n`;
         this._innerBlocks.forEach((nextBlock) => {
             while (nextBlock) {
                 code += nextBlock.generateCode(level + 1);
@@ -79,9 +150,8 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
         if (done) {
             this._currentInnerBlock = this._currentInnerBlock.nextBlock;
         }
-        console.log(done, this._currentInnerBlock, this._currentIndex);
         if (!this._currentInnerBlock) this._currentIndex += 1;
-        if (this._currentIndex >= 4) {
+        if (this._currentIndex >= this._repeatCount) {
             this._currentIndex = 0;
             return [this, true];
         } else {
