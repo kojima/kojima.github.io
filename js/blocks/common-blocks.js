@@ -144,14 +144,18 @@ class BlocklyElement {
         path.setAttribute('d', this.d());
         g.appendChild(path);
         g.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('non-draggable')) return;
+
             e.preventDefault();
             e.stopPropagation();
             const id = g.getAttribute('id');
             Editor.selectedBlock = blocks[id];
             this._element.classList.add('grabbing');
             Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
-        });
+        }, false);
         g.addEventListener('mouseup', (e) => {
+            if (e.target.classList.contains('non-draggable')) return;
+
             e.preventDefault();
             e.stopPropagation();
             if (Editor.acceptorBlock) {
@@ -173,7 +177,7 @@ class BlocklyElement {
             arduinoCode.innerHTML = code;
             arduinoCode.removeAttribute('data-highlighted');
             hljs.highlightElement(arduinoCode);
-        });
+        }, false);
         this._element = g;
 
         return g;

@@ -28,6 +28,7 @@ class Editor {
         }
     };
     static _index = [];
+    static colorPalette = ['#fff', '#000', '#808080', '#996e36', '#f55525', '#ffe438', '#88dd20', '#22e0cd', '#269aff', '#bb1cd4'];
 }
 
 const blocks = {};
@@ -117,7 +118,8 @@ window.addEventListener('load', () => {
     //const initBlock = new InitialBlocklyElement(0, 0);
     const pauseBlocklyElement = new PauseBlocklyElement(20, 20);
     const pauseBlocklyElement2 = new PauseBlocklyElement(80, 20);
-    const turnOnAllLedsWithColorsBlocklyElement = new TurnOnAllLedsWithColorsBlocklyElement(30, 200);
+    const turnOnAllLedsWithColorsBlocklyElement1 = new TurnOnAllLedsWithColorsBlocklyElement(30, 200);
+    const turnOnAllLedsWithColorsBlocklyElement2 = new TurnOnAllLedsWithColorsBlocklyElement(30, 250);
     const commandBlock3 = new NeopixelBlocklyElement(40, 40);
     const turnOffAllLedBlocklyElement = new TurnOffAllLedsBlocklyElement(100, 0);
     const loopBlock1 = new LoopBlocklyElement(300, 0);
@@ -129,7 +131,8 @@ window.addEventListener('load', () => {
     //blocks[initBlock.id] = initBlock;
     blocks[pauseBlocklyElement.id] = pauseBlocklyElement;
     blocks[pauseBlocklyElement2.id] = pauseBlocklyElement2;
-    blocks[turnOnAllLedsWithColorsBlocklyElement.id] = turnOnAllLedsWithColorsBlocklyElement;
+    blocks[turnOnAllLedsWithColorsBlocklyElement1.id] = turnOnAllLedsWithColorsBlocklyElement1;
+    blocks[turnOnAllLedsWithColorsBlocklyElement2.id] = turnOnAllLedsWithColorsBlocklyElement2;
     blocks[commandBlock3.id] = commandBlock3;
     blocks[turnOffAllLedBlocklyElement.id] = turnOffAllLedBlocklyElement;
     blocks[loopBlock1.id] = loopBlock1;
@@ -139,7 +142,8 @@ window.addEventListener('load', () => {
     blocks[Editor.triggerBlock.id] = Editor.triggerBlock;
 
     //svg.appendChild(initBlock.element);
-    svg.appendChild(turnOnAllLedsWithColorsBlocklyElement.element);
+    svg.appendChild(turnOnAllLedsWithColorsBlocklyElement1.element);
+    svg.appendChild(turnOnAllLedsWithColorsBlocklyElement2.element);
     svg.appendChild(commandBlock3.element);
     svg.appendChild(pauseBlocklyElement.element);
     svg.appendChild(pauseBlocklyElement2.element);

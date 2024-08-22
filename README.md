@@ -12,5 +12,5 @@ https://fontawesome.com
 ## JS library
 - highlight.js
 https://github.com/highlightjs/highlight.js
-- colorPicker
-https://github.com/PitPik/colorPicker
+- jscolor
+https://jscolor.com

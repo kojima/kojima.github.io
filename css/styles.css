@@ -367,3 +367,7 @@ text.blocklyText {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
+
+input.color.non-draggable {
+    outline: none;
+}
