@@ -8,6 +8,10 @@ html, body {
     overflow: hidden;
 }
 
+body {
+    font-size: 12pt;
+}
+
 @font-face {
     font-family: MADE_Tommy_Soft;
     src: url("fonts/MADE_Tommy_Soft_Bold_PERSONAL_USE.otf");
@@ -123,7 +127,8 @@ html, body {
     cursor: grab;
 }
 
-#blockly_editor g.grabbing {
+#blockly_editor g.grabbing,
+#blockly_editor g.grabbing * {
     cursor: grabbing;
 }
 
@@ -238,7 +243,7 @@ text.blocklyText {
     width: calc(100% - 400px);
     height: 100%;
     box-sizing: border-box;
-    border-left: 2px solid #ddd;
+    border-left: 1px solid #ddd;
 }
 
 #simulator {
@@ -246,9 +251,151 @@ text.blocklyText {
     height: 320px;
 }
 
+#blockly_tool_box {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;;
+    min-width: 184px;
+    background-color: #fff;
+    box-shadow: 4px 0 2px -4px rgba(0,0,0,.12),
+        4px 0 2px -4px rgba(0,0,0,.24);
+    overflow-x: visible;
+    overflow-y: visible;
+    padding-top: 0;
+    z-index: 40;
+    border-right: 1px solid #ddd;
+}
+
+#blockly_tool_box_table {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow-x: visible;
+    overflow-y: auto;
+}
+
 #simulator > svg {
     width: 100%;
     height: 100%;
+}
+
+#simulator_buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin-top: 24px;
+}
+
+#simulator_buttons .button {
+    cursor: pointer;
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    outline: none;
+    border: none;
+    vertical-align: baseline;
+    background: #e0e1e2 none;
+    color: rgba(0,0,0,.6);
+    text-transform: none;
+    text-shadow: none;
+    font-weight: 700;
+    line-height: 1em;
+    font-style: normal;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    transition: opacity .1s ease,
+        background-color .1s ease,
+        color .1s ease,
+        box-shadow .1s ease,
+        background .1s ease;
+    will-change: "";
+    -webkit-tap-highlight-color: transparent;
+}
+
+#simulator_buttons .button:focus,
+#simulator_buttons .button:hover {
+    filter: grayscale(.15) brightness(.85) contrast(1.3);
+}
+
+#simulator_buttons .button:active {
+    background-color: #babbbc;
+    background-image: "";
+    color: rgba(0,0,0,.9);
+}
+
+#simulator_buttons .button.play .fa-play {
+    color: #107c10 !important;
+}
+
+#simulator_buttons .button.stop .fa-play,
+#simulator_buttons .button.play .fa-stop {
+    display: none;
+}
+
+#simulator_buttons .button:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+#simulator_buttons .button:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+#blockly_tool_box .blockly-tool-box-row {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    min-height: 40px;
+    line-height: 22px;
+    padding-right: 8px;
+    white-space: nowrap;
+    cursor: pointer;
+    border-left-width: 12px;
+    box-shadow: inset 0 -1px 0 0 #ecf0f1;
+}
+
+#blockly_tool_box .blockly-tool-box-row.basic {
+    color: rgb(30, 144, 255);
+    border-left: 8px solid rgb(30, 144, 255);
+}
+
+#blockly_tool_box .blockly-tool-box-row.neopixel {
+    color: #5C2D91;
+    border-left: 8px solid #5C2D91;
+}
+
+#blockly_tool_box .blockly-tool-box-row.loop {
+    color: rgb(0, 170, 0);
+    border-left: 8px solid rgb(0, 170, 0);
+}
+
+#blockly_tool_box .blockly-tool-box-row .icon {
+    font-size: 1.3rem;
+    margin: 0 .25em;
+}
+
+#blockly_tool_box .blockly-tool-box-row .label {
+    font-family: Roboto,Helvetica Neue,Helvetica,Arial,sans-serif !important;
+    font-weight: 200;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+#blockly_tool_box .blockly-tool-bow-list {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    height: 100%;
+}
+
+#blockly_tool_box .blockly-tool-bow-list .blockly-flyout-background {
+    fill: #4b4949;
 }
 
 #arduino_editor_wrapper {
@@ -337,7 +484,7 @@ text.blocklyText {
     display: none;
 }
 
-.button {
+#footer .button {
     cursor: pointer;
     color: #fff;
     background-color: #3454d1;
@@ -350,11 +497,11 @@ text.blocklyText {
     height: 56px;
 }
 
-.button:hover {
+#footer .button:hover {
     background-color: #2445c7;
 }
 
-.button:active {
+#footer .button:active {
     background-color: #2742ab;
 }
 
@@ -369,19 +516,71 @@ text.blocklyText {
 }
 
 input.color,
-input.repeat-count {
+input.repeat-count,
+input.wait-in-ms {
     outline: none;
     border-style: solid;
 }
 
-input.repeat-count {
-    width: 40px;
+input.repeat-count,
+input.wait-in-ms {
     height: 32px;
     font-size: 1rem;
     text-align: center;
     border-radius: 16px;
     box-sizing: border-box;
+    font: 600 12pt "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+}
+
+input.repeat-count {
+    width: 40px;
     border-color: #008000;
+}
+
+input.wait-in-ms {
+    position: relative;
+    width: 74px;
+    border-color: #176cbf;
+    padding-right: 10px;
+}
+
+div.wait-in-ms-wrapper.focused input.wait-in-ms {
+    padding-right: 0;
+}
+
+div.wait-in-ms-wrapper {
+    position: relative;
+}
+
+div.wait-in-ms-wrapper:not(.focused)::after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 12px;
+    height: 12px;
+    top: 12px;
+    right: 9px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMi43MSIgaGVpZ2h0PSI4Ljc5IiB2aWV3Qm94PSIwIDAgMTIuNzEgOC43OSI+PHRpdGxlPmRyb3Bkb3duLWFycm93PC90aXRsZT48ZyBvcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0xMi43MSwyLjQ0QTIuNDEsMi40MSwwLDAsMSwxMiw0LjE2TDguMDgsOC4wOGEyLjQ1LDIuNDUsMCwwLDEtMy40NSwwTDAuNzIsNC4xNkEyLjQyLDIuNDIsMCwwLDEsMCwyLjQ0LDIuNDgsMi40OCwwLDAsMSwuNzEuNzFDMSwwLjQ3LDEuNDMsMCw2LjM2LDBTMTEuNzUsMC40NiwxMiwuNzFBMi40NCwyLjQ0LDAsMCwxLDEyLjcxLDIuNDRaIiBmaWxsPSIjMjMxZjIwIi8+PC9nPjxwYXRoIGQ9Ik02LjM2LDcuNzlhMS40MywxLjQzLDAsMCwxLTEtLjQyTDEuNDIsMy40NWExLjQ0LDEuNDQsMCwwLDEsMC0yYzAuNTYtLjU2LDkuMzEtMC41Niw5Ljg3LDBhMS40NCwxLjQ0LDAsMCwxLDAsMkw3LjM3LDcuMzdBMS40MywxLjQzLDAsMCwxLDYuMzYsNy43OVoiIGZpbGw9IiM1NzVFNzUiLz48L3N2Zz4K");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.blockly-element .blockly-background-path {
+    fill: none;
+}
+
+.blockly-element.blockly-selected > .blockly-background-path {
+    /*filter: url(#blocklySelectedGlowFilter);*/
+}
+
+.blockly-element.blockly-disabled > path {
+    fill: url(#blocklyDisabledPattern);
+    fill-opacity: .8;
+    stroke-opacity: .8;
+}
+
+.blockly-element.blockly-disabled input {
+    opacity: .8;
 }
 
 input::-webkit-outer-spin-button,

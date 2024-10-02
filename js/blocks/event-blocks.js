@@ -15,24 +15,18 @@ class OnShakedBlocklyElement extends ContainerBlocklyElement {
         return this._width;
     }
 
-    get element() {
-        if (!this._element) {
-            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.setAttribute('transform', 'translate(8, 14.5)');
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.classList.add('blocklyText');
-            text.setAttribute('dominant-baseline', 'central');
-            text.setAttribute('x', 0);
-            text.setAttribute('y', 9.5);
-            text.innerHTML = '揺さぶられたとき';
-            g.appendChild(text);
+    generateInnerElement() {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('transform', 'translate(8, 14.5)');
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.classList.add('blocklyText');
+        text.setAttribute('dominant-baseline', 'central');
+        text.setAttribute('x', 0);
+        text.setAttribute('y', 9.5);
+        text.innerHTML = '揺さぶられたとき';
+        g.appendChild(text);
 
-            const element = super.element;
-            element.appendChild(g);
-            return element;    
-        } else {
-            return this._element;
-        }
+        return g;
     }
 
     getNumberOfEntry() {
@@ -47,6 +41,7 @@ class OnShakedBlocklyElement extends ContainerBlocklyElement {
     }
 
     generateCode(level) {
+        this._element.classList.remove('blockly-disabled');
         const indent = this.generateIndent(level);
         let code = indent + '// 揺さぶられたとき\n';
         code += indent + 'void handleOnShaked() {\n';

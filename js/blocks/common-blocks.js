@@ -131,25 +131,48 @@ class BlocklyElement {
         throw new Error('path difinition not implemented error');
     }
 
+    generateInnerElement() {
+        throw new Error('generateInnerElement not implemented error');
+    }
+
+    select() {
+        this._element.classList.add('blockly-selected');
+        const backgroundPath = this._element.querySelector('.blockly-background-path');
+        this._element.appendChild(backgroundPath);
+    }
+
     get element() {
         if (this._element) return this._element;
 
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.classList.add('blockly-element');
         g.setAttribute('id', this._id);
-        g.setAttribute('stroke', this._stroke);
-        g.setAttribute('fill', this._fill);
         g.setAttribute('transform', `translate(${this.x}, ${this.y}) scale(${Editor.blocklyScale}, ${Editor.blocklyScale})`);
         g.setAttribute('stroke-width', this.strokeWidth);
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.style.fill = this._fill;
         path.setAttribute('d', this.d());
         g.appendChild(path);
+
+        const innerElement = this.generateInnerElement();
+        g.appendChild(innerElement);
+
+        const backgroundPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        backgroundPath.classList.add('blockly-background-path');
+        backgroundPath.style.stroke = this._stroke;
+        backgroundPath.setAttribute('d', this.d());
+        g.appendChild(backgroundPath);
+
         g.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('non-draggable')) return;
 
             e.preventDefault();
             e.stopPropagation();
+            const selected = document.querySelector('.blockly-selected');
+            selected && selected.classList.remove('blockly-selected');
             const id = g.getAttribute('id');
             Editor.selectedBlock = blocks[id];
+            this.select();
             this._element.classList.add('grabbing');
             Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
         }, false);
@@ -169,6 +192,9 @@ class BlocklyElement {
             // Editor.triggerBlock.executeSimulator();
             window.requestAnimationFrame(step);
 
+            for (const block of Object.values(blocks)) {
+                block.element.classList.add('blockly-disabled');
+            }
             Editor.resetIndex();
             let code = Editor.triggerBlock.generateCode(0);
             const codeTemplate = document.getElementById('arduino_code_template').innerHTML;
@@ -176,8 +202,9 @@ class BlocklyElement {
             const arduinoCode = document.getElementById('arduino_code');
             arduinoCode.innerHTML = code;
             arduinoCode.removeAttribute('data-highlighted');
-            hljs.highlightElement(arduinoCode);
+            //hljs.highlightElement(arduinoCode);
         }, false);
+
         this._element = g;
 
         return g;
@@ -207,7 +234,9 @@ class BlocklyElement {
     }
 
     render() {
-        this.element.querySelector('path').setAttribute('d', this.d());
+        this.element.querySelectorAll(':scope > path').forEach((elm) => {
+            elm.setAttribute('d', this.d());
+        });
         this._prevBlock && this.prevBlock.render();
         if (this._nextBlock) {
             this._nextBlock.y = this.height;
@@ -244,6 +273,7 @@ class BlocklyElement {
             b.y = this.height;
             b.updateTransform();
             this._prevBlock && this._prevBlock.render();
+            //block.select();
         }
     }
 

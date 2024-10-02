@@ -1,6 +1,6 @@
 window.addEventListener('load', () => {
     const arduinoCode = document.getElementById('arduino_code');
-    hljs.highlightElement(arduinoCode);
+    //hljs.highlightElement(arduinoCode);
 
     /*
     const addButton = document.getElementById('add_tab_button');
@@ -26,6 +26,12 @@ window.addEventListener('load', () => {
         }
     });
     */
+
+    document.getElementById('replay_simulator').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.requestAnimationFrame(step);
+    });
 
     const BLOCKLY_EDITOR = 1;
     const ARDUINO_EDITOR = 2;

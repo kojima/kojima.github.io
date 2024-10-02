@@ -94,7 +94,6 @@ class ContainerBlocklyElement extends BlocklyElement {
             this._nextBlock.y = this.height;
             this._nextBlock.updateTransform();
         }
-        innerBlock.nextBlock = null;
     }
 
     render() {
@@ -169,23 +168,17 @@ class InitialBlocklyElement extends ContainerBlocklyElement {
         return false;
     }
 
-    get element() {
-        if (!this._element) {
-            const element = super.element;
-            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.setAttribute('transform', 'translate(8, 14.5)');
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.classList.add('blocklyText');
-            text.setAttribute('dominant-baseline', 'central');
-            text.setAttribute('x', 0);
-            text.setAttribute('y', 9.5);
-            text.innerHTML = '最初だけ';
-            g.appendChild(text);
-            element.appendChild(g);
-            return element;
-        } else {
-            return this._element;
-        }
+    generateInnerElement() {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('transform', 'translate(8, 14.5)');
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.classList.add('blocklyText');
+        text.setAttribute('dominant-baseline', 'central');
+        text.setAttribute('x', 0);
+        text.setAttribute('y', 9.5);
+        text.innerHTML = '最初だけ';
+        g.appendChild(text);
+        return g;
     }
 }
 

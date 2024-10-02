@@ -38,20 +38,18 @@ window.addEventListener('mousemove', (e) => {
         e.preventDefault();
         let prevBlock = Editor.selectedBlock.prevBlock;
         if (prevBlock) {
-            prevBlock.unsetInnerBlock
-                ? prevBlock.unsetInnerBlock(Editor.selectedBlock)
-                : prevBlock.nextBlock = null;
+            prevBlock.unsetInnerBlock && prevBlock.unsetInnerBlock(Editor.selectedBlock);
+            prevBlock.nextBlock = null;
             prevBlock.render();
         }
         Editor.selectedBlock.prevBlock = null;
-        //Editor.selectedBlock.nextBlock = null;
         Editor.selectedBlock.x = Editor.selectedBlock.absX;
         Editor.selectedBlock.y = Editor.selectedBlock.absY;
         const diffX = e.clientX - Editor.prevPoint.x;
         const diffY = e.clientY - Editor.prevPoint.y;
         Editor.selectedBlock.handleMouseMove(diffX, diffY);
         Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
-        document.querySelector('#blockly_editor rect').setAttribute('transform', 'translate(0, 0)');
+        document.querySelector('#blockly_editor_background').setAttribute('transform', 'translate(0, 0)');
 
         if (Editor.selectedBlock.insertable) {
             Editor.acceptorBlock = null;
@@ -73,9 +71,9 @@ window.addEventListener('mousemove', (e) => {
             block.updateTransform();
         });
         Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
-        const rect = document.querySelector('#blockly_editor rect');
-        rect.setAttribute('transform', 'translate(0, 0)');
-        if (!rect.classList.contains('moving')) rect.classList.add('moving');
+        const background = document.querySelector('#blockly_editor_background');
+        background.setAttribute('transform', 'translate(0, 0)');
+        if (!background.classList.contains('moving')) background.classList.add('moving');
 
         const gridPattern = document.querySelector('#blocklyGridPattern');
         const x = parseInt(gridPattern.getAttribute('x'));
@@ -120,7 +118,6 @@ window.addEventListener('load', () => {
     const pauseBlocklyElement2 = new PauseBlocklyElement(80, 20);
     const turnOnAllLedsWithColorsBlocklyElement1 = new TurnOnAllLedsWithColorsBlocklyElement(30, 200);
     const turnOnAllLedsWithColorsBlocklyElement2 = new TurnOnAllLedsWithColorsBlocklyElement(30, 250);
-    const commandBlock3 = new NeopixelBlocklyElement(40, 40);
     const turnOffAllLedBlocklyElement = new TurnOffAllLedsBlocklyElement(100, 0);
     const loopBlock1 = new LoopBlocklyElement(300, 0);
     const loopBlock2 = new LoopBlocklyElement(400, 0);
@@ -133,7 +130,6 @@ window.addEventListener('load', () => {
     blocks[pauseBlocklyElement2.id] = pauseBlocklyElement2;
     blocks[turnOnAllLedsWithColorsBlocklyElement1.id] = turnOnAllLedsWithColorsBlocklyElement1;
     blocks[turnOnAllLedsWithColorsBlocklyElement2.id] = turnOnAllLedsWithColorsBlocklyElement2;
-    blocks[commandBlock3.id] = commandBlock3;
     blocks[turnOffAllLedBlocklyElement.id] = turnOffAllLedBlocklyElement;
     blocks[loopBlock1.id] = loopBlock1;
     blocks[loopBlock2.id] = loopBlock2;
@@ -144,7 +140,6 @@ window.addEventListener('load', () => {
     //svg.appendChild(initBlock.element);
     svg.appendChild(turnOnAllLedsWithColorsBlocklyElement1.element);
     svg.appendChild(turnOnAllLedsWithColorsBlocklyElement2.element);
-    svg.appendChild(commandBlock3.element);
     svg.appendChild(pauseBlocklyElement.element);
     svg.appendChild(pauseBlocklyElement2.element);
     svg.appendChild(turnOffAllLedBlocklyElement.element);
@@ -154,7 +149,8 @@ window.addEventListener('load', () => {
     //svg.appendChild(foreverBlock.element);
     svg.appendChild(Editor.triggerBlock.element);
 
-    document.querySelector('#blockly_editor rect').addEventListener('mousedown', (e) => {
+    document.querySelector('#blockly_editor_background').addEventListener('mousedown', (e) => {
+        console.log('mousedown');
         Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
     });
 });
