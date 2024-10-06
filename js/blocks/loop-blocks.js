@@ -146,4 +146,8 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
             return [this, false];
         }
     }
+
+    getBlocklyClass() {
+        return LoopBlocklyElement;
+    }
 }

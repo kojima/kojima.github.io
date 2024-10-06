@@ -1,3 +1,13 @@
+const resizeBlocklyList = (list) => {
+    const height = document.getElementById('blockly_tool_box_table').getBoundingClientRect().height;
+    let maxWidth = Number.MIN_VALUE;
+    list.querySelectorAll('.blockly-element').forEach((elm) => {
+        maxWidth = Math.max(maxWidth, elm.getBoundingClientRect().width);
+    });
+    list.querySelector('.blockly-flyout-background').setAttribute('d', `M 0,0 h ${maxWidth + 48} a 8 8 0 0 1 8 8 v ${height - 16} a 8 8 0 0 1 -8 8 h -${maxWidth + 48} z`);
+    list.style.width = maxWidth + 48 + 16;
+}
+
 window.addEventListener('load', () => {
     const arduinoCode = document.getElementById('arduino_code');
     //hljs.highlightElement(arduinoCode);
@@ -52,6 +62,8 @@ window.addEventListener('load', () => {
         document.querySelector('#blockly_editor_wrapper').classList.add('selected');
         document.querySelector('#arduino_editor_wrapper').classList.remove('selected');
 
+        document.querySelector('#blockly_tool_box').classList.remove('hidden');
+
         document.querySelector('#copy_wrapper').classList.add('hidden');
         setTimeout(() => {
             document.querySelector('#copy_wrapper').classList.add('deep-hidden');
@@ -72,6 +84,8 @@ window.addEventListener('load', () => {
 
         document.querySelector('#arduino_editor_wrapper').classList.add('selected');
         document.querySelector('#blockly_editor_wrapper').classList.remove('selected');
+
+        document.querySelector('#blockly_tool_box').classList.add('hidden');
 
         document.querySelector('#copy_wrapper').classList.remove('deep-hidden');
         setTimeout(() => {
@@ -128,4 +142,26 @@ window.addEventListener('load', () => {
             document.getElementById('arduino_code').style.transform = `scale(${Editor.arduinoScale})`;
         }
     };
+
+    document.querySelectorAll('.blockly-tool-box-row').forEach((elm) => {
+        const type = elm.getAttribute('data-blockly-type');
+        const list = document.querySelector(`.blockly-tool-bow-list.${type}`);
+        elm.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            document.querySelectorAll(`.blockly-tool-box-row:not(.${type}`).forEach((l) => l.classList.remove('selected'));
+            elm.classList.contains('selected') ? elm.classList.remove('selected') : elm.classList.add('selected');
+
+            document.querySelectorAll(`.blockly-tool-bow-list:not(.${type})`).forEach((l) => l.classList.remove('show'));
+            list.classList.contains('show') ? list.classList.remove('show') : list.classList.add('show');
+
+            resizeBlocklyList(list);
+        });
+    });
+});
+
+window.addEventListener('resize', () => {
+    const list = document.querySelector('.blockly-tool-bow-list.show');
+    list && resizeBlocklyList(list);
 });

@@ -10,6 +10,7 @@ class BlocklyElement {
     _nextBlock = null;
     _prependable = true;
     _appendable = true;
+    _listItem = false;
 
     constructor(x, y) {
         this._id = generateId(16);
@@ -107,6 +108,11 @@ class BlocklyElement {
         return true;
     }
 
+    set listItem(value) {
+        console.log(this, value);
+        this._listItem = value;
+    }
+
     updateTransform() {
         const transforms = this._element.transform.baseVal;
         if (transforms.length === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
@@ -163,18 +169,34 @@ class BlocklyElement {
         backgroundPath.setAttribute('d', this.d());
         g.appendChild(backgroundPath);
 
+        const block = this;
         g.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('non-draggable')) return;
-
-            e.preventDefault();
-            e.stopPropagation();
-            const selected = document.querySelector('.blockly-selected');
-            selected && selected.classList.remove('blockly-selected');
-            const id = g.getAttribute('id');
-            Editor.selectedBlock = blocks[id];
-            this.select();
-            this._element.classList.add('grabbing');
-            Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
+            else if (block._listItem) {
+                const blockRect = block.element.getBoundingClientRect();
+                const editorRect = Editor.canvas.getBoundingClientRect();
+                let clone = new (block.getBlocklyClass())(
+                    blockRect.x - editorRect.x,
+                    blockRect.y - editorRect.y);
+                blocks[clone.id] = clone;
+                clone.listItem = false;
+                //document.getElementById('blockly_drag_space').appendChild(clone.element);
+                clone.element.style.zIndex = 50;
+                Editor.selectedBlock = clone;
+                clone.select();
+                clone._element.classList.add('grabbing');
+                Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
+            } else {
+                e.preventDefault();
+                e.stopPropagation();
+                const selected = document.querySelector('.blockly-selected');
+                selected && selected.classList.remove('blockly-selected');
+                const id = g.getAttribute('id');
+                Editor.selectedBlock = blocks[id];
+                this.select();
+                this._element.classList.add('grabbing');
+                Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
+            }
         }, false);
         g.addEventListener('mouseup', (e) => {
             if (e.target.classList.contains('non-draggable')) return;
@@ -222,7 +244,7 @@ class BlocklyElement {
 
     handleMouseMove(diffX, diffY) {
         if (!this._element.classList.contains('moving')) {
-            document.querySelector('#blockly_editor').appendChild(this._element);
+            document.querySelector('#blockly_drag_space').appendChild(this._element);
         }
         this._element.classList.add('moving');
         this.applyPositionDiff(diffX, diffY);
@@ -291,5 +313,9 @@ class BlocklyElement {
 
     executeSimulator(elapsedTime) {
         throw new Error('executeSimulator not implemented error');
+    }
+
+    getBlocklyClass() {
+        throw new Error('getBlocklyClass not implemented error');
     }
 }

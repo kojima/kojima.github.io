@@ -31,7 +31,16 @@ class Editor {
     static colorPalette = ['#fff', '#000', '#808080', '#996e36', '#f55525', '#ffe438', '#88dd20', '#22e0cd', '#269aff', '#bb1cd4'];
 }
 
+const hideBlocklyToolBowList = () => {
+    document.querySelectorAll('.blockly-tool-bow-list.show').forEach((l) => l.classList.remove('show'));
+    document.querySelectorAll('.blockly-tool-box-row.selected').forEach((l) => l.classList.remove('selected'));
+}
+
 const blocks = {};
+
+window.addEventListener('mousedown', (e) => {
+    console.log(e.target);
+});
 
 window.addEventListener('mousemove', (e) => {
     if (Editor.selectedBlock) {
@@ -60,6 +69,7 @@ window.addEventListener('mousemove', (e) => {
                 }
             });
         }
+        hideBlocklyToolBowList();
     } else if (Editor.prevPoint.x && Editor.prevPoint.y) {
         e.preventDefault();
         const diffX = e.clientX - Editor.prevPoint.x;
@@ -80,6 +90,7 @@ window.addEventListener('mousemove', (e) => {
         const y = parseInt(gridPattern.getAttribute('y'));
         gridPattern.setAttribute('x', x + diffX);
         gridPattern.setAttribute('y', y + diffY);
+        hideBlocklyToolBowList();
     }
 });
 
@@ -93,6 +104,7 @@ window.addEventListener('mouseup', (e) => {
     Editor.selectedBlock = null;
     Editor.prevPoint.x = null, Editor.prevPoint.y = null;
     document.querySelector('#blockly_editor rect').classList.remove('moving');
+    e.target.getAttribute('id') === 'blockly_editor_background' && hideBlocklyToolBowList();
 });
 
 window.addEventListener('load', () => {
@@ -113,41 +125,35 @@ window.addEventListener('load', () => {
     const observer = new MutationObserver(callback);
     observer.observe(svg, config);
 
-    //const initBlock = new InitialBlocklyElement(0, 0);
-    const pauseBlocklyElement = new PauseBlocklyElement(20, 20);
-    const pauseBlocklyElement2 = new PauseBlocklyElement(80, 20);
-    const turnOnAllLedsWithColorsBlocklyElement1 = new TurnOnAllLedsWithColorsBlocklyElement(30, 200);
-    const turnOnAllLedsWithColorsBlocklyElement2 = new TurnOnAllLedsWithColorsBlocklyElement(30, 250);
-    const turnOffAllLedBlocklyElement = new TurnOffAllLedsBlocklyElement(100, 0);
-    const loopBlock1 = new LoopBlocklyElement(300, 0);
-    const loopBlock2 = new LoopBlocklyElement(400, 0);
-    //const ifBlock = new IfBlocklyElement(500, 200);
-    //const foreverBlock = new ForeverBlocklyElement(500, 500);
-    Editor.triggerBlock = new OnShakedBlocklyElement(200, 300);
-
-    //blocks[initBlock.id] = initBlock;
-    blocks[pauseBlocklyElement.id] = pauseBlocklyElement;
-    blocks[pauseBlocklyElement2.id] = pauseBlocklyElement2;
-    blocks[turnOnAllLedsWithColorsBlocklyElement1.id] = turnOnAllLedsWithColorsBlocklyElement1;
-    blocks[turnOnAllLedsWithColorsBlocklyElement2.id] = turnOnAllLedsWithColorsBlocklyElement2;
-    blocks[turnOffAllLedBlocklyElement.id] = turnOffAllLedBlocklyElement;
-    blocks[loopBlock1.id] = loopBlock1;
-    blocks[loopBlock2.id] = loopBlock2;
-    //blocks[ifBlock.id] = ifBlock;
-    //blocks[foreverBlock.id] = foreverBlock;
+    Editor.triggerBlock = new OnShakedBlocklyElement(208, 24);
     blocks[Editor.triggerBlock.id] = Editor.triggerBlock;
-
-    //svg.appendChild(initBlock.element);
-    svg.appendChild(turnOnAllLedsWithColorsBlocklyElement1.element);
-    svg.appendChild(turnOnAllLedsWithColorsBlocklyElement2.element);
-    svg.appendChild(pauseBlocklyElement.element);
-    svg.appendChild(pauseBlocklyElement2.element);
-    svg.appendChild(turnOffAllLedBlocklyElement.element);
-    svg.appendChild(loopBlock1.element);
-    svg.appendChild(loopBlock2.element);
-    //svg.appendChild(ifBlock.element);
-    //svg.appendChild(foreverBlock.element);
     svg.appendChild(Editor.triggerBlock.element);
+
+    // list setup
+    // basic
+    const basicList = document.querySelector('.blockly-tool-bow-list-container.basic');
+
+    const pauseBlocklyElementForList = new PauseBlocklyElement(0, 0);
+    pauseBlocklyElementForList.listItem = true;
+    basicList.appendChild(pauseBlocklyElementForList.element);
+
+    // neopixel
+    const neopixelList = document.querySelector('.blockly-tool-bow-list-container.neopixel');
+
+    const turnOnAllLedsWithColorsBlocklyElementForList = new TurnOnAllLedsWithColorsBlocklyElement(0, 0);
+    turnOnAllLedsWithColorsBlocklyElementForList.listItem = true;
+    neopixelList.appendChild(turnOnAllLedsWithColorsBlocklyElementForList.element);
+
+    const turnOffAllLedBlocklyElementForList = new TurnOffAllLedsBlocklyElement(0, 80);
+    turnOffAllLedBlocklyElementForList.listItem = true;
+    neopixelList.appendChild(turnOffAllLedBlocklyElementForList.element);
+
+    // loop
+    const loopList = document.querySelector('.blockly-tool-bow-list-container.loop');
+
+    const loopBlockForList = new LoopBlocklyElement(0, 0);
+    loopBlockForList.listItem = true;
+    loopList.appendChild(loopBlockForList.element);
 
     document.querySelector('#blockly_editor_background').addEventListener('mousedown', (e) => {
         console.log('mousedown');
