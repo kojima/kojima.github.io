@@ -64,7 +64,6 @@ class OnShakedBlocklyElement extends ContainerBlocklyElement {
         const [block, done] = this._currentInnerBlock.executeSimulator(elapsedTime);
         if (done) {
             this._currentInnerBlock = this._currentInnerBlock.nextBlock;
-            console.log('Next', this._currentInnerBlock);
         }
         return [this, !this._currentInnerBlock];
     }

@@ -31,7 +31,6 @@ class ContainerBlocklyElement extends BlocklyElement {
             if (this.y > block.y) {
                 if (this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600) {
                     super.appendBlock(block);
-                    console.log(this._prevBlock, this._nextBlock);
                 }
             } else {
                 // check for insertable
@@ -66,7 +65,6 @@ class ContainerBlocklyElement extends BlocklyElement {
                 // check for appendability
                 if (this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600) {
                     super.appendBlock(block);
-                    console.log(this._prevBlock, this._nextBlock);
                 }
             }
         }

@@ -109,7 +109,6 @@ class BlocklyElement {
     }
 
     set listItem(value) {
-        console.log(this, value);
         this._listItem = value;
     }
 
@@ -175,12 +174,11 @@ class BlocklyElement {
             else if (block._listItem) {
                 const blockRect = block.element.getBoundingClientRect();
                 const editorRect = Editor.canvas.getBoundingClientRect();
-                let clone = new (block.getBlocklyClass())(
+                const clone = new (block.getBlocklyClass())(
                     blockRect.x - editorRect.x,
                     blockRect.y - editorRect.y);
                 blocks[clone.id] = clone;
                 clone.listItem = false;
-                //document.getElementById('blockly_drag_space').appendChild(clone.element);
                 clone.element.style.zIndex = 50;
                 Editor.selectedBlock = clone;
                 clone.select();
@@ -224,7 +222,7 @@ class BlocklyElement {
             const arduinoCode = document.getElementById('arduino_code');
             arduinoCode.innerHTML = code;
             arduinoCode.removeAttribute('data-highlighted');
-            //hljs.highlightElement(arduinoCode);
+            hljs.highlightElement(arduinoCode);
         }, false);
 
         this._element = g;

@@ -5,12 +5,12 @@ const resizeBlocklyList = (list) => {
         maxWidth = Math.max(maxWidth, elm.getBoundingClientRect().width);
     });
     list.querySelector('.blockly-flyout-background').setAttribute('d', `M 0,0 h ${maxWidth + 48} a 8 8 0 0 1 8 8 v ${height - 16} a 8 8 0 0 1 -8 8 h -${maxWidth + 48} z`);
-    list.style.width = maxWidth + 48 + 16;
+    list.style.width = `${maxWidth + 48 + 8}px`;
 }
 
 window.addEventListener('load', () => {
     const arduinoCode = document.getElementById('arduino_code');
-    //hljs.highlightElement(arduinoCode);
+    hljs.highlightElement(arduinoCode);
 
     /*
     const addButton = document.getElementById('add_tab_button');

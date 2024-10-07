@@ -124,7 +124,6 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
 
         setTimeout(() => {
             jscolor.presets.default = {
-                preset: "dark",
                 backgroundColor: '#333',
                 width: 250,
                 palette: Editor.colorPalette,

@@ -151,6 +151,7 @@ text.blocklyText {
 }
 
 #header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -158,6 +159,7 @@ text.blocklyText {
     background-color: #3454d1;
     color: #fff;
     padding: 0 24px;
+    z-index: 41;
 }
 
 #container {
@@ -177,6 +179,7 @@ text.blocklyText {
     border-top: 2px solid #ddd;
     box-sizing: border-box;
     gap: 16px;
+    z-index: 41;
 }
 
 #editor_switch {
@@ -237,6 +240,7 @@ text.blocklyText {
     padding-top: 32px;
     background-color: #fdfdff;
     box-sizing: border-box;
+    z-index: 41;
 }
 
 #right_pane {
@@ -276,7 +280,16 @@ text.blocklyText {
 
 #blockly_drag_space {
     position: absolute;
-    z-index: 41;
+    z-index: 0;
+    overflow: visible;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+}
+
+#blockly_drag_space.active {
+    z-index: 1;
 }
 
 #blockly_tool_box_table {

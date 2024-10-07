@@ -38,10 +38,6 @@ const hideBlocklyToolBowList = () => {
 
 const blocks = {};
 
-window.addEventListener('mousedown', (e) => {
-    console.log(e.target);
-});
-
 window.addEventListener('mousemove', (e) => {
     if (Editor.selectedBlock) {
         e.preventDefault();
@@ -70,6 +66,7 @@ window.addEventListener('mousemove', (e) => {
             });
         }
         hideBlocklyToolBowList();
+        jscolor.install();
     } else if (Editor.prevPoint.x && Editor.prevPoint.y) {
         e.preventDefault();
         const diffX = e.clientX - Editor.prevPoint.x;
@@ -97,6 +94,7 @@ window.addEventListener('mousemove', (e) => {
 window.addEventListener('mouseup', (e) => {
     Editor.selectedBlock && Editor.selectedBlock.handleMouseUp();
     if (Editor.selectedBlock && Editor.acceptorBlock) {
+        Editor.svg.appendChild(Editor.selectedBlock.element);
         Editor.acceptorBlock.appendBlock(Editor.selectedBlock);
         let prevBlock = Editor.selectedBlock.prevBlock;
         prevBlock.render();
@@ -156,7 +154,6 @@ window.addEventListener('load', () => {
     loopList.appendChild(loopBlockForList.element);
 
     document.querySelector('#blockly_editor_background').addEventListener('mousedown', (e) => {
-        console.log('mousedown');
         Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
     });
 });
