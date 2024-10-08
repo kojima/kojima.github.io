@@ -3,6 +3,7 @@ class OnShakedBlocklyElement extends ContainerBlocklyElement {
     _fill = '#d400d4';
     _prependable = false;
     _appendable = false;
+    _deletable = false;
 
     d() {
         const totalInnerBlockHeight = this.totalInnerBlockHeight(0);
@@ -66,5 +67,9 @@ class OnShakedBlocklyElement extends ContainerBlocklyElement {
             this._currentInnerBlock = this._currentInnerBlock.nextBlock;
         }
         return [this, !this._currentInnerBlock];
+    }
+
+    resetSimulator() {
+        this._currentInnerBlock = null;
     }
 }

@@ -12,6 +12,56 @@ class Editor {
     static offset = { x: 0, y: 0 };
     static acceptorBlock = null;
     static arduinoScale = defaultScale;
+    static animationId = null;
+    static simulatorStartedAt = null;
+    static simulatorPausedAt = null;
+    static previousTimeStamp = null;
+    static currentBlock = null;
+    static simulatorStep = (timestamp) => {
+        if (Editor.simulatorStartedAt === null && Editor.previousTimeStamp !== null) {
+            Editor.animationId = null;
+            if (!Editor.simulatorPausedAt) {
+                Editor.simulatorPausedAt = timestamp;
+                document.getElementById('led1').style.fill = '#cecece';
+                document.getElementById('led2').style.fill = '#cecece';
+                document.getElementById('led3').style.fill = '#cecece';
+                document.getElementById('led4').style.fill = '#cecece';
+                document.getElementById('simulator').style.filter = 'blur(5px)';
+            }
+            if (timestamp - Editor.simulatorPausedAt > 1000) {
+                Editor.simulatorPausedAt = null;
+                Editor.previousTimeStamp = null;
+                document.getElementById('simulator').style.filter = 'none';
+            }
+            window.requestAnimationFrame(Editor.simulatorStep);
+            return;
+        }
+
+        if (Editor.simulatorStartedAt === null) {
+            Editor.simulatorStartedAt = timestamp;
+            Editor.currentBlock = null;
+            Object.keys(blocks).forEach((id) => {
+                blocks[id].resetSimulator();
+            });
+        }
+
+        const elapsed = timestamp - Editor.simulatorStartedAt;
+
+        if (Editor.currentBlock === null) {
+            Editor.currentBlock = Editor.triggerBlock;
+        }
+
+        let done = false;
+        if (Editor.previousTimeStamp !== timestamp) {
+            [Editor.currentBlock, done] = Editor.currentBlock.executeSimulator(elapsed);
+        }
+        Editor.previousTimeStamp = timestamp;
+        if (!done) {
+            Editor.animationId = window.requestAnimationFrame(Editor.simulatorStep);
+        } else {
+            Editor.animationId = null;
+        }
+    };
     static getIndex = () => {
         return Editor._index.shift();
     };
@@ -66,6 +116,18 @@ window.addEventListener('mousemove', (e) => {
             });
         }
         hideBlocklyToolBowList();
+
+        if (Editor.selectedBlock.deletable) {
+            const trash = document.getElementById('blockly_trash_space');
+            trash.classList.add('active');
+            const rightPanePos = document.getElementById('right_pane').getBoundingClientRect();
+            const dist = e.clientX - rightPanePos.x;
+            const opacity = (0.9/ 250) * Math.min(250 - Math.min(250, dist - 100), 250);
+            trash.style.opacity = opacity;
+            opacity > 0.75 && trash.classList.add('red');
+            opacity === 0 && trash.classList.remove('red');
+        }
+
         jscolor.install();
     } else if (Editor.prevPoint.x && Editor.prevPoint.y) {
         e.preventDefault();

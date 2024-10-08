@@ -101,8 +101,12 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
             if (e.target.value.length === 0) {
                 e.target.value = this._repeatCount;
             } else {
-                this._repeatCount = Math.floor(e.target.value);
-                e.target.value = this._repeatCount;
+                const value = Math.floor(e.target.value);
+                if (this._repeatCount !== value) {
+                    this._repeatCount = value;
+                    e.target.value = this._repeatCount;
+                    this.replaySimulator();
+                }
             }
         });
         this._repeatCountInput.className = 'repeat-count non-draggable';
@@ -145,6 +149,11 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
         } else {
             return [this, false];
         }
+    }
+
+    resetSimulator() {
+        this._currentInnerBlock = null;
+        this._currentIndex = 0;
     }
 
     getBlocklyClass() {

@@ -27,33 +27,6 @@
     <!-- fontawesome: https://fontawesome.com -->
     <link rel="stylesheet" href="css/fontawesome/css/all.css">
 
-    <script>
-        let start = null;
-        let previousTimeStamp;
-        let done = false;
-        let currentBlock = null;
-
-        function step(timestamp) {
-            if (start === null) {
-                start = timestamp;
-            }
-            const elapsed = timestamp - start;
-
-            if (currentBlock === null) {
-                currentBlock = Editor.triggerBlock;
-            }
-
-            let done = false;
-            if (previousTimeStamp !== timestamp) {
-                [currentBlock, done] = currentBlock.executeSimulator(elapsed);
-            }
-            previousTimeStamp = timestamp;
-            if (!done) {
-                window.requestAnimationFrame(step);
-            }
-        }
-    </script>
-
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
 
     <style>
@@ -140,6 +113,9 @@
             </div>
             <div id="right_pane">
                 <div id="blockly_tool_box">
+                    <div id="blockly_trash_space">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
                     <svg id="blockly_drag_space"></svg>
                     <div id="blockly_tool_box_table">
                         <div class="blockly-tool-box-row basic" data-blockly-type="basic">

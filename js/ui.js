@@ -40,7 +40,9 @@ window.addEventListener('load', () => {
     document.getElementById('replay_simulator').addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        window.requestAnimationFrame(step);
+        Editor.simulatorStartedAt = null;
+        Editor.animationId && window.cancelAnimationFrame(Editor.animationId);
+        window.requestAnimationFrame(Editor.simulatorStep);
     });
 
     const BLOCKLY_EDITOR = 1;

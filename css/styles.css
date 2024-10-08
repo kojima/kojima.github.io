@@ -278,18 +278,39 @@ text.blocklyText {
     display: none;
 }
 
+#blockly_trash_space {
+    position: absolute;
+    z-index: 2;
+    width: 184px;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    bottom: 0;
+    font-size: 4em;
+    background-color: rgb(255, 255, 255);
+    color: #9400D3;
+    display: none;
+    opacity: 0;
+    transition: background-color 1s ease;
+
+}
+
+#blockly_trash_space.active {
+    display: flex;
+}
+
+#blockly_trash_space.red {
+    background-color: #ff0000;
+}
+
 #blockly_drag_space {
     position: absolute;
-    z-index: 0;
+    z-index: 3;
     overflow: visible;
     left: 0;
     top: 0;
     width: 0;
     height: 0;
-}
-
-#blockly_drag_space.active {
-    z-index: 1;
 }
 
 #blockly_tool_box_table {

@@ -11,6 +11,7 @@ class BlocklyElement {
     _prependable = true;
     _appendable = true;
     _listItem = false;
+    _deletable = true;
 
     constructor(x, y) {
         this._id = generateId(16);
@@ -112,6 +113,10 @@ class BlocklyElement {
         this._listItem = value;
     }
 
+    get deletable() {
+        return this._deletable;
+    }
+
     updateTransform() {
         const transforms = this._element.transform.baseVal;
         if (transforms.length === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
@@ -146,13 +151,17 @@ class BlocklyElement {
         this._element.appendChild(backgroundPath);
     }
 
+    getTransform(translateX, translateY, scale) {
+        return `translate(${translateX}, ${translateY}) scale(${scale}, ${scale})`;
+    }
+
     get element() {
         if (this._element) return this._element;
 
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.classList.add('blockly-element');
         g.setAttribute('id', this._id);
-        g.setAttribute('transform', `translate(${this.x}, ${this.y}) scale(${Editor.blocklyScale}, ${Editor.blocklyScale})`);
+        g.setAttribute('transform', this.getTransform(this.x, this.y, Editor.blocklyScale));
         g.setAttribute('stroke-width', this.strokeWidth);
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.style.fill = this._fill;
@@ -206,11 +215,23 @@ class BlocklyElement {
                 this._prevBlock && this._prevBlock.render();
             }
             this.handleMouseUp();
+
+            const rightPanePos = document.getElementById('right_pane').getBoundingClientRect();
+            const dist = e.clientX - rightPanePos.x;
+            !block.prevBlock && Editor.canvas.appendChild(block._element);
+            if (block.deletable && dist > 0 && dist < 184) {
+                delete blocks[block.id];
+                block._element.remove();
+            }
             Editor.selectedBlock = null;
             Editor.prevPoint.x = null, Editor.prevPoint.y = null;
 
+            const trash = document.getElementById('blockly_trash_space');
+            trash.classList.remove('active');
+            trash.classList.remove('red');
+
             // Editor.triggerBlock.executeSimulator();
-            window.requestAnimationFrame(step);
+            this.replaySimulator();
 
             for (const block of Object.values(blocks)) {
                 block.element.classList.add('blockly-disabled');
@@ -311,6 +332,15 @@ class BlocklyElement {
 
     executeSimulator(elapsedTime) {
         throw new Error('executeSimulator not implemented error');
+    }
+
+    resetSimulator() {
+    }
+
+    replaySimulator() {
+        Editor.animationId && window.cancelAnimationFrame(Editor.animationId);
+        Editor.simulatorStartedAt = null;
+        window.requestAnimationFrame(Editor.simulatorStep);
     }
 
     getBlocklyClass() {

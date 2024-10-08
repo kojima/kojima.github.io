@@ -68,8 +68,12 @@ class PauseBlocklyElement extends CommandBlocklyElement {
             if (e.target.value.length === 0) {
                 e.target.value = this._waitInMs;
             } else {
-                this._waitInMs = Math.floor(e.target.value);
-                e.target.value = this._waitInMs;
+                const value = Math.floor(e.target.value);
+                if (this._waitInMs !== value) {
+                    this._waitInMs = Math.floor(e.target.value);
+                    e.target.value = this._waitInMs;
+                    this.replaySimulator();
+                }
             }
         });
         this._waitInMsInput.className = 'wait-in-ms non-draggable';
@@ -94,6 +98,10 @@ class PauseBlocklyElement extends CommandBlocklyElement {
         } else {
             return [this, false];
         }
+    }
+
+    resetSimulator() {
+        this._waitStartFrom = null;
     }
 
     getBlocklyClass() {

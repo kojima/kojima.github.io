@@ -13,6 +13,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         led3: {r: 0, g: 0, b: 255},
         led4: {r: 255, g: 255, b: 255}
     }
+    _colorChanged = false;
 
     _onFocus = (e) => {
         e.target.jscolor.option('palette', Editor.colorPalette);
@@ -23,14 +24,19 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
             Editor.colorPalette.shift();
             Editor.colorPalette.push(e.target.value);
         }
+        this._colorChanged && this.replaySimulator();
     }
 
     _onChange = (e) => {
         const color = e.target.value;
         const led = e.target.getAttribute('data-led');
-        this._colors[led].r = parseInt(color.slice(1, 3), 16);
-        this._colors[led].g = parseInt(color.slice(3, 5), 16);
-        this._colors[led].b = parseInt(color.slice(5, 7), 16);
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        this._colorChanged = this._colors[led].r !== r || this._colors[led].g !== g || this._colors[led].b !== b;
+        this._colors[led].r = r;
+        this._colors[led].g = g;
+        this._colors[led].b = b;
     }
 
     generateInnerElement() {
