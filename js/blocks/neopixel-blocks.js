@@ -111,6 +111,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color1.className = 'color non-draggable';
         color1.setAttribute('data-led', 'led1');
         color1.setAttribute('data-jscolor', '{value: "#ff0000"}');
+        color1.setAttribute('tabindex', '-1');
         color1.style.width = '32px';
         color1.style.height = '32px';
         fObj1.appendChild(color1);
@@ -126,6 +127,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color2.className = 'color non-draggable';
         color2.setAttribute('data-led', 'led2');
         color2.setAttribute('data-jscolor', '{value: "#00ff00"}');
+        color2.setAttribute('tabindex', '-1');
         color2.style.width = '32px';
         color2.style.height = '32px';
         fObj2.appendChild(color2);
@@ -141,6 +143,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color3.className = 'color non-draggable';
         color3.setAttribute('data-led', 'led3');
         color3.setAttribute('data-jscolor', '{value: "#0000ff"}');
+        color3.setAttribute('tabindex', '-1');
         color3.style.width = '32px';
         color3.style.height = '32px';
         color3.value = '#0000ff';
@@ -157,6 +160,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color4.className = 'color non-draggable';
         color4.setAttribute('data-led', 'led4');
         color4.setAttribute('data-jscolor', '{value: "#ffffff"}');
+        color4.setAttribute('tabindex', '-1');
         color4.style.width = '32px';
         color4.style.height = '32px';
         color4.value = '#ffffff';
@@ -299,6 +303,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color1.className = 'color non-draggable';
         color1.setAttribute('data-led', 'led1');
         color1.setAttribute('data-jscolor', '{value: "#ff0000"}');
+        color1.setAttribute('tabindex', '-1');
         color1.style.width = '32px';
         color1.style.height = '32px';
         fObj1.appendChild(color1);
@@ -314,6 +319,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color2.className = 'color non-draggable';
         color2.setAttribute('data-led', 'led2');
         color2.setAttribute('data-jscolor', '{value: "#00ff00"}');
+        color2.setAttribute('tabindex', '-1');
         color2.style.width = '32px';
         color2.style.height = '32px';
         fObj2.appendChild(color2);
@@ -329,6 +335,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color3.className = 'color non-draggable';
         color3.setAttribute('data-led', 'led3');
         color3.setAttribute('data-jscolor', '{value: "#0000ff"}');
+        color3.setAttribute('tabindex', '-1');
         color3.style.width = '32px';
         color3.style.height = '32px';
         color3.value = '#0000ff';
@@ -345,6 +352,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         color4.className = 'color non-draggable';
         color4.setAttribute('data-led', 'led4');
         color4.setAttribute('data-jscolor', '{value: "#ffffff"}');
+        color4.setAttribute('tabindex', '-1');
         color4.style.width = '32px';
         color4.style.height = '32px';
         color4.value = '#ffffff';
