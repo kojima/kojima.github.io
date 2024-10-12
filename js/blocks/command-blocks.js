@@ -84,7 +84,7 @@ class PauseBlocklyElement extends CommandBlocklyElement {
 
     generateCode(level) {
         this._element.classList.remove('blockly-disabled');
-        return this.generateIndent(level) + `delay(${this._waitInMs});\n`;
+        return this.generateIndent(level) + `delay(${this._waitInMs});\n\n`;
     }
 
     executeSimulator(elapsedTime) {

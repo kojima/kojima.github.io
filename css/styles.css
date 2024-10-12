@@ -621,13 +621,17 @@ text.blocklyText {
 
 input.color,
 input.repeat-count,
-input.wait-in-ms {
+input.wait-in-ms,
+input.fade-out-in-ms,
+input.fade-in-in-ms {
     outline: none;
     border-style: solid;
 }
 
 input.repeat-count,
-input.wait-in-ms {
+input.wait-in-ms,
+input.fade-out-in-ms,
+input.fade-in-in-ms {
     height: 32px;
     font-size: 1rem;
     text-align: center;
@@ -648,15 +652,29 @@ input.wait-in-ms {
     padding-right: 10px;
 }
 
-div.wait-in-ms-wrapper.focused input.wait-in-ms {
+input.fade-out-in-ms,
+input.fade-in-in-ms {
+    position: relative;
+    width: 74px;
+    border-color: #00183c;
+    padding-right: 10px;
+}
+
+div.wait-in-ms-wrapper.focused input.wait-in-ms,
+div.fade-out-in-ms-wrapper.focused input.fade-out-in-ms,
+div.fade-in-in-ms-wrapper.focused input.fade-in-in-ms {
     padding-right: 0;
 }
 
-div.wait-in-ms-wrapper {
+div.wait-in-ms-wrapper,
+div.fade-out-in-ms-wrapper,
+div.fade-in-in-ms-wrapper {
     position: relative;
 }
 
-div.wait-in-ms-wrapper:not(.focused)::after {
+div.wait-in-ms-wrapper:not(.focused)::after,
+div.fade-out-in-ms-wrapper:not(.focused)::after,
+div.fade-in-in-ms-wrapper:not(.focused)::after {
     content: '';
     position: absolute;
     display: block;
@@ -682,13 +700,13 @@ div.wait-in-ms-wrapper:not(.focused)::after {
 }
 
 .blockly-element.blockly-disabled > path {
-    fill: url(#blocklyDisabledPattern);
+    /*fill: url(#blocklyDisabledPattern);
     fill-opacity: .8;
-    stroke-opacity: .8;
+    stroke-opacity: .8;*/
 }
 
 .blockly-element.blockly-disabled input {
-    opacity: .8;
+    /*opacity: .8;*/
 }
 
 input::-webkit-outer-spin-button,

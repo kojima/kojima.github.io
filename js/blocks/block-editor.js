@@ -12,6 +12,12 @@ class Editor {
     static offset = { x: 0, y: 0 };
     static acceptorBlock = null;
     static arduinoScale = defaultScale;
+    static simulatorLEDs = [
+        {r: 206, g: 206, b: 206},
+        {r: 206, g: 206, b: 206},
+        {r: 206, g: 206, b: 206},
+        {r: 206, g: 206, b: 206},
+    ];
     static animationId = null;
     static simulatorStartedAt = null;
     static simulatorPausedAt = null;
@@ -78,6 +84,16 @@ class Editor {
         }
     };
     static _index = [];
+    static generateArduinoCode = () => {
+        Editor.resetIndex();
+        let code = Editor.triggerBlock.generateCode(0);
+        const codeTemplate = document.getElementById('arduino_code_template').innerHTML;
+        code = codeTemplate.replace('{{ code }}', code);
+        const arduinoCode = document.getElementById('arduino_code');
+        arduinoCode.innerHTML = code;
+        arduinoCode.removeAttribute('data-highlighted');
+        hljs.highlightElement(arduinoCode);
+    }
     static colorPalette = ['#fff', '#000', '#808080', '#996e36', '#f55525', '#ffe438', '#88dd20', '#22e0cd', '#269aff', '#bb1cd4'];
 }
 
@@ -204,9 +220,17 @@ window.addEventListener('load', () => {
     turnOnAllLedsWithColorsBlocklyElementForList.listItem = true;
     neopixelList.appendChild(turnOnAllLedsWithColorsBlocklyElementForList.element);
 
-    const turnOffAllLedBlocklyElementForList = new TurnOffAllLedsBlocklyElement(0, 80);
+    const fadeInAllLedsWithColorsBlocklyElementForList = new FadeInAllLedsWithColorsBlocklyElement(0, 80);
+    fadeInAllLedsWithColorsBlocklyElementForList.listItem = true;
+    neopixelList.appendChild(fadeInAllLedsWithColorsBlocklyElementForList.element);
+
+    const turnOffAllLedBlocklyElementForList = new TurnOffAllLedsBlocklyElement(0, 160);
     turnOffAllLedBlocklyElementForList.listItem = true;
     neopixelList.appendChild(turnOffAllLedBlocklyElementForList.element);
+
+    const fadeOutAllLEDsBlocklyElementForList = new FadeOutAllLEDsBlocklyElement(0, 240);
+    fadeOutAllLEDsBlocklyElementForList.listItem = true;
+    neopixelList.appendChild(fadeOutAllLEDsBlocklyElementForList.element);
 
     // loop
     const loopList = document.querySelector('.blockly-tool-bow-list-container.loop');

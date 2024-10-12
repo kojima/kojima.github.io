@@ -236,14 +236,8 @@ class BlocklyElement {
             for (const block of Object.values(blocks)) {
                 block.element.classList.add('blockly-disabled');
             }
-            Editor.resetIndex();
-            let code = Editor.triggerBlock.generateCode(0);
-            const codeTemplate = document.getElementById('arduino_code_template').innerHTML;
-            code = codeTemplate.replace('{{ code }}', code);
-            const arduinoCode = document.getElementById('arduino_code');
-            arduinoCode.innerHTML = code;
-            arduinoCode.removeAttribute('data-highlighted');
-            hljs.highlightElement(arduinoCode);
+
+            Editor.generateArduinoCode();
         }, false);
 
         this._element = g;

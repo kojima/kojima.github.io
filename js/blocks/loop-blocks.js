@@ -106,6 +106,7 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
                     this._repeatCount = value;
                     e.target.value = this._repeatCount;
                     this.replaySimulator();
+                    Editor.generateArduinoCode();
                 }
             }
         });
@@ -127,7 +128,7 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
             }
         });
         Editor.returnBackIndex(index);
-        return code + indent + '}\n';
+        return code + indent + '}\n\n';
     }
 
     _currentInnerBlock = null;
