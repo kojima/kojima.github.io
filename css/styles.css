@@ -119,20 +119,20 @@ body {
     user-select: none;
 }
 
-#blockly_editor g {
+.blockly-element {
     z-index: 1;
 }
 
-#blockly_editor g:not(.grabbing):hover {
+.blockly-element:not(.grabbing) {
     cursor: grab;
 }
 
-#blockly_editor g.grabbing,
-#blockly_editor g.grabbing * {
+.blockly-element.grabbing,
+.blockly-element.grabbing * {
     cursor: grabbing;
 }
 
-#blockly_editor g.moving {
+.blockly-element.moving {
     opacity: 0.75;
 }
 
