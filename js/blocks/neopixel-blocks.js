@@ -65,7 +65,6 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
             Editor.colorPalette.push(e.target.value);
         }
         this._colorChanged && this.replaySimulator();
-        Editor.generateArduinoCode();
     }
 
     _onChange = (e) => {
@@ -75,9 +74,12 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         const g = parseInt(color.slice(3, 5), 16);
         const b = parseInt(color.slice(5, 7), 16);
         this._colorChanged = this._colors[led].r !== r || this._colors[led].g !== g || this._colors[led].b !== b;
-        this._colors[led].r = r;
-        this._colors[led].g = g;
-        this._colors[led].b = b;
+        if (this._colorChanged) {
+            this._colors[led].r = r;
+            this._colors[led].g = g;
+            this._colors[led].b = b;
+            Editor.generateArduinoCode();
+        }
     }
 
     generateInnerElement() {
@@ -190,14 +192,18 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         this._element.classList.remove('blockly-disabled');
         const indent = this.generateIndent(level);
         let code = '';
-        code += indent + `led1 = {${this._colors.led1.r.toString().padStart(3)}, ${this._colors.led1.g.toString().padStart(3)}, ${this._colors.led1.b.toString().padStart(3)}};\n`;
-        code += indent + `led2 = {${this._colors.led2.r.toString().padStart(3)}, ${this._colors.led2.g.toString().padStart(3)}, ${this._colors.led2.b.toString().padStart(3)}};\n`;
-        code += indent + `led3 = {${this._colors.led3.r.toString().padStart(3)}, ${this._colors.led3.g.toString().padStart(3)}, ${this._colors.led3.b.toString().padStart(3)}};\n`;
-        code += indent + `led4 = {${this._colors.led4.r.toString().padStart(3)}, ${this._colors.led4.g.toString().padStart(3)}, ${this._colors.led4.b.toString().padStart(3)}};\n`;
-        code += indent + `pixels.setPixelColor(0, pixels.Color(led1.r, led1.g, led1.b));\n`
-        code += indent + `pixels.setPixelColor(1, pixels.Color(led2.r, led2.g, led2.b));\n`
-        code += indent + `pixels.setPixelColor(2, pixels.Color(led3.r, led3.g, led3.b));\n`
-        code += indent + `pixels.setPixelColor(3, pixels.Color(led4.r, led4.g, led4.b));\n`
+        const hsv1 = this._convertRgbToHsv(this._colors.led1.r, this._colors.led1.g, this._colors.led1.b);
+        const hsv2 = this._convertRgbToHsv(this._colors.led2.r, this._colors.led2.g, this._colors.led2.b);
+        const hsv3 = this._convertRgbToHsv(this._colors.led3.r, this._colors.led3.g, this._colors.led3.b);
+        const hsv4 = this._convertRgbToHsv(this._colors.led4.r, this._colors.led4.g, this._colors.led4.b);
+        code += indent + `led1 = {{${this._colors.led1.r}, ${this._colors.led1.g}, ${this._colors.led1.b}}, {${hsv1.h}, ${hsv1.s}, ${hsv1.v}}};\n`;
+        code += indent + `led2 = {{${this._colors.led2.r}, ${this._colors.led2.g}, ${this._colors.led2.b}}, {${hsv2.h}, ${hsv2.s}, ${hsv2.v}}};\n`;
+        code += indent + `led3 = {{${this._colors.led3.r}, ${this._colors.led3.g}, ${this._colors.led3.b}}, {${hsv3.h}, ${hsv3.s}, ${hsv3.v}}};\n`;
+        code += indent + `led4 = {{${this._colors.led4.r}, ${this._colors.led4.g}, ${this._colors.led4.b}}, {${hsv4.h}, ${hsv4.s}, ${hsv4.v}}};\n`;
+        code += indent + `pixels.setPixelColor(0, pixels.Color(led1.rgb.r, led1.rgb.g, led1.rgb.b));\n`
+        code += indent + `pixels.setPixelColor(1, pixels.Color(led2.rgb.r, led2.rgb.g, led2.rgb.b));\n`
+        code += indent + `pixels.setPixelColor(2, pixels.Color(led3.rgb.r, led3.rgb.g, led3.rgb.b));\n`
+        code += indent + `pixels.setPixelColor(3, pixels.Color(led4.rgb.r, led4.rgb.g, led4.rgb.b));\n`
         code += indent + 'pixels.show();\n\n';
         return code;
     }
@@ -248,7 +254,6 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
             Editor.colorPalette.push(e.target.value);
         }
         this._colorChanged && this.replaySimulator();
-        Editor.generateArduinoCode();
     }
 
     _onChange = (e) => {
@@ -258,9 +263,12 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         const g = parseInt(color.slice(3, 5), 16);
         const b = parseInt(color.slice(5, 7), 16);
         this._colorChanged = this._colors[led].r !== r || this._colors[led].g !== g || this._colors[led].b !== b;
-        this._colors[led].r = r;
-        this._colors[led].g = g;
-        this._colors[led].b = b;
+        if (this._colorChanged) {
+            this._colors[led].r = r;
+            this._colors[led].g = g;
+            this._colors[led].b = b;
+            Editor.generateArduinoCode();
+        }
     }
 
     d() {
@@ -487,7 +495,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
             const toHsl4 = this._convertRgbToHsl(this._colors.led4.r, this._colors.led4.g, this._colors.led4.b);
 
             let x = (elapsedTime - this._fadeInStartFrom) / parseFloat(this._fadeInInMs);
-            x = 1 - (1 - x) * (1 - x);
+            //x = 1 - (1 - x) * (1 - x);
             const led1Hsl = {h: toHsl1.h * x + fromHsl1.h * (1 - x), s: toHsl1.s * x + fromHsl1.s * (1 - x), l: toHsl1.l * x + fromHsl1.l * (1 - x)};
             const led2Hsl = {h: toHsl2.h * x + fromHsl2.h * (1 - x), s: toHsl2.s * x + fromHsl2.s * (1 - x), l: toHsl2.l * x + fromHsl2.l * (1 - x)};
             const led3Hsl = {h: toHsl3.h * x + fromHsl3.h * (1 - x), s: toHsl3.s * x + fromHsl3.s * (1 - x), l: toHsl3.l * x + fromHsl3.l * (1 - x)};
