@@ -106,6 +106,7 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
                     this._repeatCount = value;
                     e.target.value = this._repeatCount;
                     this.replaySimulator();
+                    saveBlocklyData();
                     Editor.generateArduinoCode();
                 }
             }
@@ -160,5 +161,24 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
 
     getBlocklyClass() {
         return LoopBlocklyElement;
+    }
+
+    toJson() {
+        const innerBlocks = [];
+        let block = this._innerBlocks[0];
+        while (block) {
+            innerBlocks.push(block.toJson());
+            block = block.nextBlock;
+        }
+        return Object.assign({
+            repeatCount: this._repeatCount,
+            innerBlocks: [innerBlocks]
+        }, super.toJson());
+    }
+
+    fromJson(json) {
+        super.fromJson(json);
+        this._repeatCount = json['repeatCount'];
+        this.render();
     }
 }

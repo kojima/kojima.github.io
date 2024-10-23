@@ -223,6 +223,8 @@ class BlocklyElement {
         g.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('non-draggable')) return;
             else if (block._listItem) {
+                e.preventDefault();
+                e.stopPropagation();
                 const blockRect = block.element.getBoundingClientRect();
                 const editorRect = Editor.canvas.getBoundingClientRect();
                 const clone = new (block.getBlocklyClass())(
@@ -231,6 +233,7 @@ class BlocklyElement {
                 blocks[clone.id] = clone;
                 clone.listItem = false;
                 clone.element.style.zIndex = 50;
+                document.querySelector('#blockly_drag_space').appendChild(clone.element);
                 Editor.selectedBlock = clone;
                 //clone.select();
                 clone._element.classList.add('grabbing');
@@ -258,6 +261,7 @@ class BlocklyElement {
                 block._prevBlock && block._prevBlock.render();
             }
             block.handleMouseUp();
+            hideBlocklyToolBowList();
 
             const rightPanePos = document.getElementById('right_pane').getBoundingClientRect();
             const dist = e.clientX - rightPanePos.x;
@@ -284,6 +288,7 @@ class BlocklyElement {
                 elm.style.display = 'none';
             });
 
+            saveBlocklyData();
             Editor.generateArduinoCode();
         }, false);
 
@@ -434,4 +439,80 @@ class BlocklyElement {
     getBlocklyClass() {
         throw new Error('getBlocklyClass not implemented error');
     }
+
+    toJson() {
+        return {
+            className: this.constructor.name,
+            x: this._x,
+            y: this._y,
+            absX: this._absX,
+            absY: this._absY,
+        };
+    }
+
+    fromJson(json) {
+        this._absX = json['absX'];
+        this._absY = json['absY'];
+    }
+}
+
+let blocklyClasses;
+window.addEventListener('load', () => {
+    blocklyClasses = {
+        OnShakedBlocklyElement,
+        PauseBlocklyElement,
+        TurnOnAllLedsWithColorsBlocklyElement,
+        FadeInAllLedsWithColorsBlocklyElement,
+        TurnOffAllLedsBlocklyElement,
+        FadeOutAllLEDsBlocklyElement,
+        LoopBlocklyElement,
+    }
+    loadBlocklyData();
+});
+
+const saveBlocklyData = () => {
+    const allJsonBlocks = [];
+    Object.values(blocks).forEach((block) => {
+        if (!block.prevBlock) {
+            const jsonBlocks = [];
+            let b = block;
+            while (b) {
+                jsonBlocks.push(b.toJson());
+                b = b.nextBlock;
+            }
+            allJsonBlocks.push(jsonBlocks);
+        }
+    });
+    sessionStorage.setItem('blockly_data', JSON.stringify(allJsonBlocks));
+}
+
+const loadBlocklyData = () => {
+    let allJsonBlocks = sessionStorage.getItem('blockly_data');
+    allJsonBlocks = allJsonBlocks && allJsonBlocks !== '[]'
+        ? JSON.parse(allJsonBlocks)
+        : [[{className: 'OnShakedBlocklyElement', x: 208, y: 24, absX: 208, absY: 24, innerBlocks: []}]];
+
+    allJsonBlocks.forEach((jsonBlocks) => {
+        let lastBlock = null;
+        jsonBlocks.forEach((jsonBlock) => {
+            const blocklyClass = blocklyClasses[jsonBlock['className']];
+            const block = new blocklyClass(jsonBlock['x'], jsonBlock['y']);
+            block.fromJson(jsonBlock);
+            blocks[block.id] = block;
+
+            if (!lastBlock) {
+                Editor.canvas.appendChild(block.element);
+            } else {
+                lastBlock.nextBlock = block;
+                block.prevBlock = lastBlock;
+                lastBlock.element.appendChild(block.element);
+            }
+
+            if (blocklyClass === OnShakedBlocklyElement) {
+                Editor.triggerBlock = block;
+            }
+            lastBlock = block;
+        });
+    });
+    Editor.generateArduinoCode();
 }

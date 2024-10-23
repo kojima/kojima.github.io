@@ -78,6 +78,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
             this._colors[led].r = r;
             this._colors[led].g = g;
             this._colors[led].b = b;
+            saveBlocklyData();
             Editor.generateArduinoCode();
         }
     }
@@ -224,6 +225,36 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
     getBlocklyClass() {
         return TurnOnAllLedsWithColorsBlocklyElement;
     }
+
+    toJson() {
+        return Object.assign({
+            led1: this._colors.led1,
+            led2: this._colors.led2,
+            led3: this._colors.led3,
+            led4: this._colors.led4,
+        }, super.toJson());
+    }
+
+    fromJson(json) {
+        super.fromJson(json);
+        this._colors.led1 = json['led1'];
+        this._colors.led2 = json['led2'];
+        this._colors.led3 = json['led3'];
+        this._colors.led4 = json['led4'];
+
+        setTimeout(() => {
+            jscolor.install();
+            const led1 = this.element.querySelector('input[data-led="led1"]');
+            const led2 = this.element.querySelector('input[data-led="led2"]');
+            const led3 = this.element.querySelector('input[data-led="led3"]');
+            const led4 = this.element.querySelector('input[data-led="led4"]');
+            led1.jscolor.fromRGBA(this._colors.led1.r, this._colors.led1.g, this._colors.led1.b, 1);
+            led2.jscolor.fromRGBA(this._colors.led2.r, this._colors.led2.g, this._colors.led2.b, 1);
+            led3.jscolor.fromRGBA(this._colors.led3.r, this._colors.led3.g, this._colors.led3.b, 1);
+            led4.jscolor.fromRGBA(this._colors.led4.r, this._colors.led4.g, this._colors.led4.b, 1);
+            this.render();
+        }, 1);
+    }
 }
 
 
@@ -268,6 +299,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
             this._colors[led].r = r;
             this._colors[led].g = g;
             this._colors[led].b = b;
+            saveBlocklyData();
             Editor.generateArduinoCode();
         }
     }
@@ -419,6 +451,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
                     this._fadeInInMs = Math.floor(e.target.value);
                     e.target.value = this._fadeInInMs;
                     this.replaySimulator();
+                    saveBlocklyData();
                     Editor.generateArduinoCode();
                 }
             }
@@ -437,34 +470,24 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         const hsv3 = this._convertRgbToHsv(this._colors.led3.r, this._colors.led3.g, this._colors.led3.b);
         const hsv4 = this._convertRgbToHsv(this._colors.led4.r, this._colors.led4.g, this._colors.led4.b);
         let code = indent + `// すべてのLEDを ${this._fadeInInMs} ミリ秒でフェードインする\n`;
-        code += indent + `for (int x = 1; x <= ${Math.floor(this._fadeInInMs / 10)}; x++) {\n`;
-        code += indent + `\tfloat ratio = x / float(${Math.floor(this._fadeInInMs / 10)});\n`;
-        code += indent + '\tratio = 1 - (1 - ratio) * (1 - ratio);\n';
-        code += indent + '\tpixels.clear();\n';
-        code += indent + '\tpixels.setBrightness(255);\n';
-        code += indent + '\tpixels.setPixelColor(0, pixels.gamma32(pixels.ColorHSV(\n';
-        code += indent + `\t\t${hsv1.h} * ratio + led1.hsv.h * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv1.s} * ratio + led1.hsv.s * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv1.v} * ratio + led1.hsv.v * (1 - ratio))));\n`;
-        code += indent + '\tpixels.setPixelColor(1, pixels.gamma32(pixels.ColorHSV(\n';
-        code += indent + `\t\t${hsv2.h} * ratio + led2.hsv.h * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv2.s} * ratio + led2.hsv.s * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv2.v} * ratio + led2.hsv.v * (1 - ratio))));\n`;
-        code += indent + '\tpixels.setPixelColor(2, pixels.gamma32(pixels.ColorHSV(\n';
-        code += indent + `\t\t${hsv3.h} * ratio + led3.hsv.h * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv3.s} * ratio + led3.hsv.s * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv3.v} * ratio + led3.hsv.v * (1 - ratio))));\n`;
-        code += indent + '\tpixels.setPixelColor(3, pixels.gamma32(pixels.ColorHSV(\n';
-        code += indent + `\t\t${hsv4.h} * ratio + led4.hsv.h * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv4.s} * ratio + led4.hsv.s * (1 - ratio),\n`;
-        code += indent + `\t\t${hsv4.v} * ratio + led4.hsv.v * (1 - ratio))));\n`;
-        code += indent + '\tpixels.show();\n';
-        code += indent + '\tdelay(10);\n';
-        code += indent + '}\n';
         code += indent + `led1 = {{${this._colors.led1.r}, ${this._colors.led1.g}, ${this._colors.led1.b}}, {${hsv1.h}, ${hsv1.s}, ${hsv1.v}}};\n`;
         code += indent + `led2 = {{${this._colors.led2.r}, ${this._colors.led2.g}, ${this._colors.led2.b}}, {${hsv2.h}, ${hsv2.s}, ${hsv2.v}}};\n`;
         code += indent + `led3 = {{${this._colors.led3.r}, ${this._colors.led3.g}, ${this._colors.led3.b}}, {${hsv3.h}, ${hsv3.s}, ${hsv3.v}}};\n`;
         code += indent + `led4 = {{${this._colors.led4.r}, ${this._colors.led4.g}, ${this._colors.led4.b}}, {${hsv4.h}, ${hsv4.s}, ${hsv4.v}}};\n\n`;
+        code += indent + `for (int x = 1; x <= ${Math.floor(this._fadeInInMs / 10)}; x++) {\n`;
+        code += indent + `\tfloat ratio = x / float(${Math.floor(this._fadeInInMs / 10)});\n`;
+        // easeInQuad: https://easings.net/#easeInQuad
+        code += indent + '\tratio = ratio * ratio;\n';
+        code += indent + '\tpixels.clear();\n';
+        code += indent + `\tpixels.setPixelColor(0, pixels.Color(led1.rgb.r, led1.rgb.g, led1.rgb.b));\n`
+        code += indent + `\tpixels.setPixelColor(1, pixels.Color(led2.rgb.r, led2.rgb.g, led2.rgb.b));\n`
+        code += indent + `\tpixels.setPixelColor(2, pixels.Color(led3.rgb.r, led3.rgb.g, led3.rgb.b));\n`
+        code += indent + `\tpixels.setPixelColor(3, pixels.Color(led4.rgb.r, led4.rgb.g, led4.rgb.b));\n`
+        code += indent + '\tint brightness = floor(255 * ratio);\n';
+        code += indent + '\tpixels.setBrightness(brightness);\n';
+        code += indent + '\tpixels.show();\n';
+        code += indent + '\tdelay(10);\n';
+        code += indent + '}\n\n';
         return code;
     }
 
@@ -485,26 +508,13 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
             document.getElementById('led4').style.fill = `rgb(${Editor.simulatorLEDs[3].r}, ${Editor.simulatorLEDs[3].g}, ${Editor.simulatorLEDs[3].b})`;
             return [this, true];
         } else {
-            const fromHsl1 = this._convertRgbToHsl(Editor.simulatorLEDs[0].r, Editor.simulatorLEDs[0].g, Editor.simulatorLEDs[0].b);
-            const fromHsl2 = this._convertRgbToHsl(Editor.simulatorLEDs[1].r, Editor.simulatorLEDs[1].g, Editor.simulatorLEDs[1].b);
-            const fromHsl3 = this._convertRgbToHsl(Editor.simulatorLEDs[2].r, Editor.simulatorLEDs[2].g, Editor.simulatorLEDs[2].b);
-            const fromHsl4 = this._convertRgbToHsl(Editor.simulatorLEDs[3].r, Editor.simulatorLEDs[3].g, Editor.simulatorLEDs[3].b);
-
-            const toHsl1 = this._convertRgbToHsl(this._colors.led1.r, this._colors.led1.g, this._colors.led1.b);
-            const toHsl2 = this._convertRgbToHsl(this._colors.led2.r, this._colors.led2.g, this._colors.led2.b);
-            const toHsl3 = this._convertRgbToHsl(this._colors.led3.r, this._colors.led3.g, this._colors.led3.b);
-            const toHsl4 = this._convertRgbToHsl(this._colors.led4.r, this._colors.led4.g, this._colors.led4.b);
-
             let x = (elapsedTime - this._fadeInStartFrom) / parseFloat(this._fadeInInMs);
-            //x = 1 - (1 - x) * (1 - x);
-            const led1Hsl = {h: toHsl1.h * x + fromHsl1.h * (1 - x), s: toHsl1.s * x + fromHsl1.s * (1 - x), l: toHsl1.l * x + fromHsl1.l * (1 - x)};
-            const led2Hsl = {h: toHsl2.h * x + fromHsl2.h * (1 - x), s: toHsl2.s * x + fromHsl2.s * (1 - x), l: toHsl2.l * x + fromHsl2.l * (1 - x)};
-            const led3Hsl = {h: toHsl3.h * x + fromHsl3.h * (1 - x), s: toHsl3.s * x + fromHsl3.s * (1 - x), l: toHsl3.l * x + fromHsl3.l * (1 - x)};
-            const led4Hsl = {h: toHsl4.h * x + fromHsl4.h * (1 - x), s: toHsl4.s * x + fromHsl4.s * (1 - x), l: toHsl4.l * x + fromHsl4.l * (1 - x)};
-            document.getElementById('led1').style.fill = `hsl(${led1Hsl.h}deg, ${led1Hsl.s}%, ${led1Hsl.l}%)`;
-            document.getElementById('led2').style.fill = `hsl(${led2Hsl.h}deg, ${led2Hsl.s}%, ${led2Hsl.l}%)`;
-            document.getElementById('led3').style.fill = `hsl(${led3Hsl.h}deg, ${led3Hsl.s}%, ${led3Hsl.l}%)`;
-            document.getElementById('led4').style.fill = `hsl(${led4Hsl.h}deg, ${led4Hsl.s}%, ${led4Hsl.l}%)`;
+            x = 1 - (1 - x) * (1 - x);
+            const alpha = x;
+            document.getElementById('led1').style.fill = `rgba(${this._colors.led1.r}, ${this._colors.led1.g}, ${this._colors.led1.b}, ${alpha})`;
+            document.getElementById('led2').style.fill = `rgba(${this._colors.led2.r}, ${this._colors.led2.g}, ${this._colors.led2.b}, ${alpha})`;
+            document.getElementById('led3').style.fill = `rgba(${this._colors.led3.r}, ${this._colors.led3.g}, ${this._colors.led3.b}, ${alpha})`;
+            document.getElementById('led4').style.fill = `rgba(${this._colors.led4.r}, ${this._colors.led4.g}, ${this._colors.led4.b}, ${alpha})`;
             return [this, false];
         }
 
@@ -522,6 +532,38 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
 
     getBlocklyClass() {
         return FadeInAllLedsWithColorsBlocklyElement;
+    }
+
+    toJson() {
+        return Object.assign({
+            fadeInInMs: this._fadeInInMs,
+            led1: this._colors.led1,
+            led2: this._colors.led2,
+            led3: this._colors.led3,
+            led4: this._colors.led4,
+        }, super.toJson());
+    }
+
+    fromJson(json) {
+        super.fromJson(json);
+        this._fadeInInMs = json['fadeInInMs'];
+        this._colors.led1 = json['led1'];
+        this._colors.led2 = json['led2'];
+        this._colors.led3 = json['led3'];
+        this._colors.led4 = json['led4'];
+
+        setTimeout(() => {
+            jscolor.install();
+            const led1 = this.element.querySelector('input[data-led="led1"]');
+            const led2 = this.element.querySelector('input[data-led="led2"]');
+            const led3 = this.element.querySelector('input[data-led="led3"]');
+            const led4 = this.element.querySelector('input[data-led="led4"]');
+            led1.jscolor.fromRGBA(this._colors.led1.r, this._colors.led1.g, this._colors.led1.b, 1);
+            led2.jscolor.fromRGBA(this._colors.led2.r, this._colors.led2.g, this._colors.led2.b, 1);
+            led3.jscolor.fromRGBA(this._colors.led3.r, this._colors.led3.g, this._colors.led3.b, 1);
+            led4.jscolor.fromRGBA(this._colors.led4.r, this._colors.led4.g, this._colors.led4.b, 1);
+            this.render();
+        }, 1);
     }
 }
 
@@ -629,6 +671,7 @@ class FadeOutAllLEDsBlocklyElement extends NeopixelBlocklyElement {
                     this._fadeOutInMs = Math.floor(e.target.value);
                     e.target.value = this._fadeOutInMs;
                     this.replaySimulator();
+                    saveBlocklyData();
                     Editor.generateArduinoCode();
                 }
             }
@@ -644,15 +687,19 @@ class FadeOutAllLEDsBlocklyElement extends NeopixelBlocklyElement {
 
         const indent = this.generateIndent(level);
         let code = indent + `// すべてのLEDを ${this._fadeOutInMs} ミリ秒でフェードアウトする\n`;
-        code += indent + `for (int b = 254; b >= 0; b--) {\n`;
+        code += indent + `for (int x = 1; x <= ${Math.floor(this._fadeOutInMs / 10)}; x++) {\n`;
+        code += indent + `\tfloat ratio = x / float(${Math.floor(this._fadeOutInMs / 10)});\n`;
+        // easeOutQuad: https://easings.net/#easeOutQuad
+        code += indent + '\tratio = 1 - (1 - ratio) * (1 - ratio);\n';
         code += indent + '\tpixels.clear();\n';
         code += indent + '\tpixels.setPixelColor(0, pixels.Color(led1.rgb.r, led1.rgb.g, led1.rgb.b));\n';
         code += indent + '\tpixels.setPixelColor(1, pixels.Color(led2.rgb.r, led2.rgb.g, led2.rgb.b));\n';
         code += indent + '\tpixels.setPixelColor(2, pixels.Color(led3.rgb.r, led3.rgb.g, led3.rgb.b));\n';
         code += indent + '\tpixels.setPixelColor(3, pixels.Color(led4.rgb.r, led4.rgb.g, led4.rgb.b));\n';
-        code += indent + '\tpixels.setBrightness(b);\n';
+        code += indent + '\tint brightness = floor(255 * (1 - ratio));\n';
+        code += indent + '\tpixels.setBrightness(brightness);\n';
         code += indent + '\tpixels.show();\n';
-        code += indent + `\tdelay(${parseInt(this._fadeOutInMs / 255.0)});\n`;
+        code += indent + '\tdelay(10);\n';
         code += indent + '}\n';
         code += indent + 'led1 = {{0, 0, 0}, {0, 0, 0}};\n';
         code += indent + 'led2 = {{0, 0, 0}, {0, 0, 0}};\n';
@@ -697,5 +744,17 @@ class FadeOutAllLEDsBlocklyElement extends NeopixelBlocklyElement {
 
     getBlocklyClass() {
         return FadeOutAllLEDsBlocklyElement;
+    }
+
+    toJson() {
+        return Object.assign({
+            fadeOutInMs: this._fadeOutInMs
+        }, super.toJson());
+    }
+
+    fromJson(json) {
+        super.fromJson(json);
+        this._fadeOutInMs = json['fadeOutInMs'];
+        this.render();
     }
 }

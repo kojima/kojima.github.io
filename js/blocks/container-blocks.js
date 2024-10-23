@@ -163,6 +163,33 @@ class ContainerBlocklyElement extends BlocklyElement {
             if (innerBlock) innerBlock.y = innerBlock._y;
         }
     }
+
+    generateInnerBlocklyElements(json) {
+        json['innerBlocks'].forEach((innerBlocks) => {
+            let lastBlock = null;
+            innerBlocks.forEach((jsonBlock) => {
+                const blocklyClass = blocklyClasses[jsonBlock['className']];
+                const block = new blocklyClass(jsonBlock['x'], jsonBlock['y']);
+                block.fromJson(jsonBlock);
+                blocks[block.id] = block;
+                if (!lastBlock) {
+                    this._innerBlocks.push(block);
+                    block.prevBlock = this;
+                    this.element.appendChild(block.element);
+                } else {
+                    lastBlock.nextBlock = block;
+                    block.prevBlock = lastBlock;
+                    lastBlock.element.appendChild(block.element);
+                }
+                lastBlock = block;
+            });
+        });
+    }
+
+    fromJson(json) {
+        super.fromJson(json);
+        this.generateInnerBlocklyElements(json);
+    }
 }
 
 class InitialBlocklyElement extends ContainerBlocklyElement {

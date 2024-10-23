@@ -72,4 +72,16 @@ class OnShakedBlocklyElement extends ContainerBlocklyElement {
     resetSimulator() {
         this._currentInnerBlock = null;
     }
+
+    toJson() {
+        const innerBlocks = [];
+        let block = this._innerBlocks[0];
+        while (block) {
+            innerBlocks.push(block.toJson());
+            block = block.nextBlock;
+        }
+        return Object.assign({
+            innerBlocks: [innerBlocks]
+        }, super.toJson());
+    }
 }

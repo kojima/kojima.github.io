@@ -75,6 +75,8 @@ class PauseBlocklyElement extends CommandBlocklyElement {
                     this.replaySimulator();
                 }
             }
+            saveBlocklyData();
+            Editor.generateArduinoCode();
         });
         this._waitInMsInput.className = 'wait-in-ms non-draggable';
         this._waitInMsInputWrapper.appendChild(this._waitInMsInput);
@@ -109,5 +111,17 @@ class PauseBlocklyElement extends CommandBlocklyElement {
 
     getBlocklyClass() {
         return PauseBlocklyElement;
+    }
+
+    toJson() {
+        return Object.assign({
+            waitInMs: this._waitInMs
+        }, super.toJson());
+    }
+
+    fromJson(json) {
+        super.fromJson(json);
+        this._waitInMs = json['waitInMs'];
+        this.render();
     }
 }

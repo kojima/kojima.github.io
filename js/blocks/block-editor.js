@@ -209,10 +209,6 @@ window.addEventListener('load', () => {
     const observer = new MutationObserver(callback);
     observer.observe(svg, config);
 
-    Editor.triggerBlock = new OnShakedBlocklyElement(208, 24);
-    blocks[Editor.triggerBlock.id] = Editor.triggerBlock;
-    svg.appendChild(Editor.triggerBlock.element);
-
     // list setup
     // basic
     const basicList = document.querySelector('.blockly-tool-bow-list-container.basic');
