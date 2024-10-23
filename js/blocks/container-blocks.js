@@ -5,10 +5,57 @@ class ContainerBlocklyElement extends BlocklyElement {
         throw Error('getNumberOfEntry is not implemented');
     }
 
+    generatePlaceholders() {
+        const placeholders = super.generatePlaceholders();
+
+        const numOfEntry = this.getNumberOfEntry();
+        let totalHeight = 48;
+        for (let i = 0; i < numOfEntry; i++) {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.classList.add('placeholder');
+            g.classList.add(`inner-${i}`);
+            g.style.display = 'none';
+            g.setAttribute('transform', `translate(-16, ${totalHeight - 6})`);
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.style.strokeWidth = '2px';
+            path.setAttribute('d', `M 9.53 5.152 l -8 -5 A 1 1 0 0 0 0 1 V 11 a 1 1 0 0 0 1.53 0.848 l 8 -5 a 1 1 0 0 0 0 -1.7 Z`);
+            g.appendChild(path);
+            placeholders.push(g);
+            totalHeight += 48 + this.totalInnerBlockHeight(i);
+        }
+        return placeholders;
+    }
+
+    distanceFrom(block) {
+        const superDist = super.distanceFrom(block);
+        const numOfEntry = this.getNumberOfEntry();
+        let totalHeight = 48;
+        let dist = Number.MAX_VALUE;
+        for (let i = 0; i < numOfEntry; i++) {
+            dist = Math.min(dist, Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + totalHeight), 2));
+            totalHeight += 48 + this.totalInnerBlockHeight(i);
+        }
+        return Math.min(superDist, dist);
+    }
+
     acceptable(block) {
-        if (this.y > block.y) {
-            // check for prependablity
-            return this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600;
+        // check for insertable
+        const numOfEntry = this.getNumberOfEntry();
+        let totalHeight = 48;
+        for (let i = 0; i < numOfEntry; i++) {
+            const acceptable = Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + totalHeight), 2) < 1600;
+            if (acceptable) {
+                this._element.querySelector(`.placeholder.inner-${i}`).style.display = 'block';
+                return true;
+            };
+            totalHeight += 48 + this.totalInnerBlockHeight(i);
+        }
+        return super.acceptable(block);
+    }
+
+    appendBlock(block) {
+        if (super.acceptable(block)) {
+            super.appendBlock(block)
         } else {
             // check for insertable
             const numOfEntry = this.getNumberOfEntry();
@@ -16,56 +63,28 @@ class ContainerBlocklyElement extends BlocklyElement {
             for (let i = 0; i < numOfEntry; i++) {
                 const acceptable = Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + totalHeight), 2) < 1600;
                 if (acceptable) {
-                    const d = new Date();
-                    return true;
+                    block.prevBlock = this;
+                    block.x = 16;
+                    block.y = totalHeight;
+                    block.updateTransform();
+                    if (this._innerBlocks[i]) {
+                        block.nextBlock = this._innerBlocks[i];
+                        this._innerBlocks[i].prevBlock = block;
+                        this._innerBlocks[i].x = 0;
+                        this._innerBlocks[i].y += block.height;
+                        this._innerBlocks[i].updateTransform();
+                        block._element.appendChild(this._innerBlocks[i]._element);
+                    }
+                    this._innerBlocks[i] = block;
+                    this._element.appendChild(block._element);
+                    this.render();
+                    if (this._nextBlock) {
+                        this._nextBlock.y = this.height;
+                        this._nextBlock.updateTransform();
+                    }
+                    return;
                 };
                 totalHeight += 48 + this.totalInnerBlockHeight(i);
-            }
-            // check for appendability
-            return this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600;
-        }
-    }
-
-    appendBlock(block) {
-        if (this.acceptable(block)) {
-            if (this.y > block.y) {
-                if (this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600) {
-                    super.appendBlock(block);
-                }
-            } else {
-                // check for insertable
-                const numOfEntry = this.getNumberOfEntry();
-                let totalHeight = 48;
-                for (let i = 0; i < numOfEntry; i++) {
-                    const acceptable = Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + totalHeight), 2) < 1600;
-                    if (acceptable) {
-                        block.prevBlock = this;
-                        block.x = 16;
-                        block.y = totalHeight;
-                        block.updateTransform();
-                        if (this._innerBlocks[i]) {
-                            block.nextBlock = this._innerBlocks[i];
-                            this._innerBlocks[i].prevBlock = block;
-                            this._innerBlocks[i].x = 0;
-                            this._innerBlocks[i].y += block.height;
-                            this._innerBlocks[i].updateTransform();
-                            block._element.appendChild(this._innerBlocks[i]._element);
-                        }
-                        this._innerBlocks[i] = block;
-                        this._element.appendChild(block._element);
-                        this.render();
-                        if (this._nextBlock) {
-                            this._nextBlock.y = this.height;
-                            this._nextBlock.updateTransform();
-                        }
-                        return;
-                    };
-                    totalHeight += 48 + this.totalInnerBlockHeight(i);
-                }
-                // check for appendability
-                if (this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600) {
-                    super.appendBlock(block);
-                }
             }
         }
     }

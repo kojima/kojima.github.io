@@ -516,7 +516,8 @@ text.blocklyText {
     display: none;
 }
 
-#copy_popup {
+#copy_popup,
+#upload_popup {
     position: absolute;
     display: flex;
     align-items: center;
@@ -532,7 +533,8 @@ text.blocklyText {
     padding: 2px;
 }
 
-#copy_popup_inner {
+#copy_popup_inner,
+#upload_popup_inner {
     border: 2px solid #fff;
     padding: 8px 12px;
     box-sizing: border-box;
@@ -554,7 +556,8 @@ text.blocklyText {
     }
 }
 
-#copy_popup.show {
+#copy_popup.show,
+#upload_popup.show {
     animation-duration: 3s;
     animation-name: popup;
 }
@@ -689,6 +692,11 @@ div.fade-in-in-ms-wrapper:not(.focused)::after {
 
 .blockly-element:hover {
     cursor: grab;
+}
+
+.blockly-element .placeholder {
+    fill: #3454d1;
+    stroke: #1D2760;
 }
 
 .blockly-element .blockly-background-path {

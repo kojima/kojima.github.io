@@ -124,12 +124,20 @@ window.addEventListener('mousemove', (e) => {
 
         if (Editor.selectedBlock.insertable) {
             Editor.acceptorBlock = null;
+            let minDist = Number.MAX_VALUE;
+            let nearestBlock = null;
             Object.keys(blocks).forEach((id) => {
                 const block = blocks[id];
-                if (!Editor.acceptorBlock && block.acceptable(Editor.selectedBlock)) {
-                    Editor.acceptorBlock = block;
+                block.resetPlaceHolder();
+                const dist = block.distanceFrom(Editor.selectedBlock);
+                if (!Editor.selectedBlock.isAncestorOf(block) && dist < minDist) {
+                    nearestBlock = block;
+                    minDist = dist;
                 }
             });
+            if (nearestBlock && nearestBlock.acceptable(Editor.selectedBlock)) {
+                Editor.acceptorBlock = nearestBlock;
+            }
         }
         hideBlocklyToolBowList();
 

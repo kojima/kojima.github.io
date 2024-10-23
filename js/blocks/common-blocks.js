@@ -155,6 +155,43 @@ class BlocklyElement {
         return `translate(${translateX}, ${translateY}) scale(${scale}, ${scale})`;
     }
 
+    generateTopPlaceholder() {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.classList.add('placeholder');
+        g.classList.add('top');
+        g.style.display = 'none';
+        g.setAttribute('transform', 'translate(-16, -6)');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.style.strokeWidth = '2px';
+        path.setAttribute('d', `M 9.53 5.152 l -8 -5 A 1 1 0 0 0 0 1 V 11 a 1 1 0 0 0 1.53 0.848 l 8 -5 a 1 1 0 0 0 0 -1.7 Z`);
+        g.appendChild(path);
+        return g;
+    }
+
+    generateBottomPlaceholder() {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.classList.add('placeholder');
+        g.classList.add('bottom');
+        g.style.display = 'none';
+        g.setAttribute('transform', 'translate(-16, 42)');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.style.strokeWidth = '2px';
+        path.setAttribute('d', `M 9.53 5.152 l -8 -5 A 1 1 0 0 0 0 1 V 11 a 1 1 0 0 0 1.53 0.848 l 8 -5 a 1 1 0 0 0 0 -1.7 Z`);
+        g.appendChild(path);
+        return g;
+    }
+
+    generatePlaceholders() {
+        const placeholders = [];
+        if (this._prependable) {
+            placeholders.push(this.generateTopPlaceholder());
+        }
+        if (this._appendable) {
+            placeholders.push(this.generateBottomPlaceholder());
+        }
+        return placeholders;
+    }
+
     get element() {
         if (this._element) return this._element;
 
@@ -163,15 +200,20 @@ class BlocklyElement {
         g.setAttribute('id', this._id);
         g.setAttribute('transform', this.getTransform(this.x, this.y, Editor.blocklyScale));
         g.setAttribute('stroke-width', this.strokeWidth);
+
+        this.generatePlaceholders().forEach((ph) => g.appendChild(ph));
+
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.classList.add('blockly-path');
         path.style.fill = this._fill;
         path.setAttribute('d', this.d());
         g.appendChild(path);
 
         const innerElement = this.generateInnerElement();
-        g.appendChild(innerElement);
+        innerElement && g.appendChild(innerElement);
 
         const backgroundPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        backgroundPath.classList.add('blockly-path');
         backgroundPath.classList.add('blockly-background-path');
         backgroundPath.style.stroke = this._stroke;
         backgroundPath.setAttribute('d', this.d());
@@ -190,7 +232,7 @@ class BlocklyElement {
                 clone.listItem = false;
                 clone.element.style.zIndex = 50;
                 Editor.selectedBlock = clone;
-                clone.select();
+                //clone.select();
                 clone._element.classList.add('grabbing');
                 Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
             } else {
@@ -200,7 +242,7 @@ class BlocklyElement {
                 selected && selected.classList.remove('blockly-selected');
                 const id = g.getAttribute('id');
                 Editor.selectedBlock = blocks[id];
-                this.select();
+                //this.select();
                 this._element.classList.add('grabbing');
                 Editor.prevPoint.x = e.clientX, Editor.prevPoint.y = e.clientY;
             }
@@ -210,11 +252,12 @@ class BlocklyElement {
 
             e.preventDefault();
             e.stopPropagation();
+
             if (Editor.acceptorBlock) {
-                Editor.acceptorBlock.appendBlock(this);
-                this._prevBlock && this._prevBlock.render();
+                Editor.acceptorBlock.appendBlock(block);
+                block._prevBlock && block._prevBlock.render();
             }
-            this.handleMouseUp();
+            block.handleMouseUp();
 
             const rightPanePos = document.getElementById('right_pane').getBoundingClientRect();
             const dist = e.clientX - rightPanePos.x;
@@ -236,6 +279,10 @@ class BlocklyElement {
             for (const block of Object.values(blocks)) {
                 block.element.classList.add('blockly-disabled');
             }
+
+            document.querySelectorAll('.placeholder').forEach((elm) => {
+                elm.style.display = 'none';
+            });
 
             Editor.generateArduinoCode();
         }, false);
@@ -269,10 +316,10 @@ class BlocklyElement {
     }
 
     render() {
-        this.element.querySelectorAll(':scope > path').forEach((elm) => {
+        this.element.querySelectorAll(':scope > .blockly-path').forEach((elm) => {
             elm.setAttribute('d', this.d());
         });
-        this._prevBlock && this.prevBlock.render();
+        this._prevBlock && this._prevBlock.render();
         if (this._nextBlock) {
             this._nextBlock.y = this.height;
             this._nextBlock.updateTransform();
@@ -283,10 +330,44 @@ class BlocklyElement {
         return 48;
     }
 
+    _topDistanceFrom(block) {
+        return Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2);
+    }
+
+    _bottomDistanceFrom(block) {
+        return Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2);
+    }
+
+    resetPlaceHolder() {
+        this._element && this._element.querySelectorAll('.placeholder').forEach((ph) => ph.style.display = 'none');
+    }
+
+    isAncestorOf(block) {
+        let next = this._nextBlock;
+        while (next) {
+            if (block === next) {
+                return true;
+            }
+            next = next._nextBlock;
+        }
+        return false;
+    }
+
+    distanceFrom(block) {
+        const topDist = this._prependable && !this._prevBlock ? this._topDistanceFrom(block) : Number.MAX_VALUE;
+        const bottomDist = this._appendable ? this._bottomDistanceFrom(block) : Number.MAX_VALUE;
+        return Math.min(topDist, bottomDist);
+    }
+
     acceptable(block) {
-        return this.y > block.y
-            ? this._appendable && Math.pow(block.x - this.absX, 2) + Math.pow((block.y + block.height) - this.absY, 2) < 1600
-            : this._prependable && Math.pow(block.x - this.absX, 2) + Math.pow(block.y - (this.absY + this.height), 2) < 1600;
+        const topDist = this._prependable && !this._prevBlock ? this._topDistanceFrom(block) : Number.MAX_VALUE;
+        const bottomDist = this._appendable ? this._bottomDistanceFrom(block) : Number.MAX_VALUE;
+        const acceptable = topDist < 1600 || bottomDist < 1600;
+        const topPlaceholder = this._element.querySelector('.placeholder.top');
+        if (topPlaceholder) topPlaceholder.style.display = topDist < 1600 && topDist < bottomDist ? 'block' : 'none';
+        const bottomPlaceHolder = this._element.querySelector('.placeholder.bottom');
+        if (bottomPlaceHolder) bottomPlaceHolder.style.display = bottomDist < 1600 && bottomDist < topDist ? 'block' : 'none';
+        return acceptable;
     }
 
     appendBlock(block) {
@@ -294,22 +375,35 @@ class BlocklyElement {
             const [a, b] = this.y < block.y ? [this, block] : [block, this];
             if (a.nextBlock) {
                 const c = a.nextBlock;
-                b._element.appendChild(c._element);
+                const lastDescendant = b.lastDescendant(a);
+                lastDescendant._element.appendChild(c._element);
                 c.x = 0;
-                c.y = b.height;
-                b.nextBlock = c;
-                c.prevBlock = b;
+                c.y = lastDescendant.height;
+                lastDescendant.nextBlock = c;
+                c.prevBlock = lastDescendant;
                 c.updateTransform();
             }
             a.nextBlock = b;
+            if (b.prevBlock) a.prevBlock = b.prevBlock;
             b.prevBlock = a;
             a._element.appendChild(b._element);
             b.x = 0;
             b.y = this.height;
             b.updateTransform();
-            this._prevBlock && this._prevBlock.render();
+            a._prevBlock && a._prevBlock.render();
             //block.select();
         }
+    }
+
+    lastDescendant(excludedBlock) {
+        if (!this.nextBlock) return this;
+
+        let nextBlock = this.nextBlock;
+        while (nextBlock && nextBlock !== excludedBlock) {
+            if (!nextBlock.nextBlock) return nextBlock;
+            nextBlock = nextBlock.nextBlock;
+        }
+        return nextBlock;
     }
 
     generateIndent(level) {

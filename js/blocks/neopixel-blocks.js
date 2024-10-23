@@ -191,7 +191,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
     generateCode(level) {
         this._element.classList.remove('blockly-disabled');
         const indent = this.generateIndent(level);
-        let code = '';
+        let code = indent + '// すべてのLEDを点灯する\n';
         const hsv1 = this._convertRgbToHsv(this._colors.led1.r, this._colors.led1.g, this._colors.led1.b);
         const hsv2 = this._convertRgbToHsv(this._colors.led2.r, this._colors.led2.g, this._colors.led2.b);
         const hsv3 = this._convertRgbToHsv(this._colors.led3.r, this._colors.led3.g, this._colors.led3.b);
@@ -204,6 +204,7 @@ class TurnOnAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         code += indent + `pixels.setPixelColor(1, pixels.Color(led2.rgb.r, led2.rgb.g, led2.rgb.b));\n`
         code += indent + `pixels.setPixelColor(2, pixels.Color(led3.rgb.r, led3.rgb.g, led3.rgb.b));\n`
         code += indent + `pixels.setPixelColor(3, pixels.Color(led4.rgb.r, led4.rgb.g, led4.rgb.b));\n`
+        code += indent + 'pixels.setBrightness(255);\n';
         code += indent + 'pixels.show();\n\n';
         return code;
     }
@@ -435,7 +436,7 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         const hsv2 = this._convertRgbToHsv(this._colors.led2.r, this._colors.led2.g, this._colors.led2.b);
         const hsv3 = this._convertRgbToHsv(this._colors.led3.r, this._colors.led3.g, this._colors.led3.b);
         const hsv4 = this._convertRgbToHsv(this._colors.led4.r, this._colors.led4.g, this._colors.led4.b);
-        let code = '';
+        let code = indent + `// すべてのLEDを ${this._fadeInInMs} ミリ秒でフェードインする\n`;
         code += indent + `for (int x = 1; x <= ${Math.floor(this._fadeInInMs / 10)}; x++) {\n`;
         code += indent + `\tfloat ratio = x / float(${Math.floor(this._fadeInInMs / 10)});\n`;
         code += indent + '\tratio = 1 - (1 - ratio) * (1 - ratio);\n';
@@ -544,7 +545,7 @@ class TurnOffAllLedsBlocklyElement extends NeopixelBlocklyElement {
     generateCode(level) {
         this._element.classList.remove('blockly-disabled');
         const indent = this.generateIndent(level);
-        let code = '';
+        let code = indent + '// すべてのLEDを消す\n';
         code += indent + 'pixels.clear();\n';
         code += indent + 'pixels.show();\n\n';
         return code;
@@ -642,7 +643,7 @@ class FadeOutAllLEDsBlocklyElement extends NeopixelBlocklyElement {
         this._element.classList.remove('blockly-disabled');
 
         const indent = this.generateIndent(level);
-        let code = '';
+        let code = indent + `// すべてのLEDを ${this._fadeOutInMs} ミリ秒でフェードアウトする\n`;
         code += indent + `for (int b = 254; b >= 0; b--) {\n`;
         code += indent + '\tpixels.clear();\n';
         code += indent + '\tpixels.setPixelColor(0, pixels.Color(led1.rgb.r, led1.rgb.g, led1.rgb.b));\n';

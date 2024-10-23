@@ -120,7 +120,8 @@ class LoopBlocklyElement extends ContainerBlocklyElement {
         this._element.classList.remove('blockly-disabled');
         const indent = this.generateIndent(level);
         const index = Editor.getIndex();
-        let code = indent + `for (int ${index} = 0; ${index} < ${this._repeatCount}; ${index}++) {\n`;
+        let code = indent + `// 繰り返し ${this._repeatCount} 回\n`;
+        code += indent + `for (int ${index} = 0; ${index} < ${this._repeatCount}; ${index}++) {\n`;
         this._innerBlocks.forEach((nextBlock) => {
             while (nextBlock) {
                 code += nextBlock.generateCode(level + 1);

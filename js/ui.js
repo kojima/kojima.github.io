@@ -161,6 +161,48 @@ window.addEventListener('load', () => {
             resizeBlocklyList(list);
         });
     });
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const user = urlParams.get('user');
+    const fileServer = urlParams.get('file_server');
+    if (user && fileServer) {
+        const wrapper = document.getElementById('upload_wrapper');
+        wrapper.classList.remove('hidden');
+        const button = wrapper.querySelector('#upload_code');
+        button.setAttribute('data-user', user);
+        button.setAttribute('data-file_server', fileServer);
+    }
+
+    document.getElementById('upload_code').addEventListener(
+        "click",
+        (e) => {
+            const button = document.getElementById('upload_code');
+            const user = button.getAttribute('data-user');
+            const fileServer = button.getAttribute('data-file_server');
+            button.setAttribute('disabled', true);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `${fileServer}/upload/${user}`);
+            xhr.responseType = 'json';
+            let formData = new FormData();
+            let code = Editor.triggerBlock.generateCode(0);
+            const codeTemplate = document.getElementById('arduino_code_template').innerHTML;
+            code = codeTemplate.replace('{{ code }}', code);
+            formData.append('code', code);
+            xhr.send(formData);
+            xhr.onload = function() {
+                document.getElementById('upload_popup').classList.add('show');
+                setTimeout(() => {
+                  document.getElementById('upload_popup').classList.remove('show');
+                  button.removeAttribute('disabled');
+                }, 3000);
+            };
+            xhr.onerror = function() {
+                alert('ファイルサーバーアクセス中に、エラーが発生しました。');
+                button.removeAttribute('disabled');
+            };
+        }
+    );
 });
 
 window.addEventListener('resize', () => {
