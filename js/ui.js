@@ -115,6 +115,7 @@ window.addEventListener('load', () => {
       }, 3000);
     }
 
+    /*
     document.getElementById('zoom_in').onclick = (e) => {
         e.preventDefault();
         if (currentEditor === BLOCKLY_EDITOR) {
@@ -144,6 +145,7 @@ window.addEventListener('load', () => {
             document.getElementById('arduino_code').style.transform = `scale(${Editor.arduinoScale})`;
         }
     };
+    */
 
     document.querySelectorAll('.blockly-tool-box-row').forEach((elm) => {
         const type = elm.getAttribute('data-blockly-type');
