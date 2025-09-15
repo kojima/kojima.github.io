@@ -29,9 +29,6 @@ class Editor {
             if (!Editor.simulatorPausedAt) {
                 Editor.simulatorPausedAt = timestamp;
                 document.getElementById('led1').style.fill = '#cecece';
-                document.getElementById('led2').style.fill = '#cecece';
-                document.getElementById('led3').style.fill = '#cecece';
-                document.getElementById('led4').style.fill = '#cecece';
                 document.getElementById('simulator').style.filter = 'blur(5px)';
             }
             if (timestamp - Editor.simulatorPausedAt > 1000) {
