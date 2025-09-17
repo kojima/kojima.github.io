@@ -63,6 +63,7 @@ class Editor {
             Editor.animationId = window.requestAnimationFrame(Editor.simulatorStep);
         } else {
             Editor.animationId = null;
+            document.getElementById('led1').style.fill = '#cecece';
         }
     };
     static getIndex = () => {
