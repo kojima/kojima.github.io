@@ -441,7 +441,7 @@ class TurnOffAllLedsBlocklyElement extends NeopixelBlocklyElement {
 }
 
 class FadeOutAllLEDsBlocklyElement extends NeopixelBlocklyElement {
-    _width = 345;
+    _width = 290;
 
     _fadeOutStartFrom = null;
 
@@ -471,7 +471,7 @@ class FadeOutAllLEDsBlocklyElement extends NeopixelBlocklyElement {
         g.appendChild(text);
 
         this._foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-        this._foreignObject.setAttribute('x', 305);
+        this._foreignObject.setAttribute('x', 240);
         this._foreignObject.setAttribute('y', -8);
         this._foreignObject.setAttribute('width', 74);
         this._foreignObject.setAttribute('height', 32);
