@@ -516,3 +516,41 @@ const loadBlocklyData = () => {
     });
     Editor.generateArduinoCode();
 }
+
+const showContextList = (target, values, backgroundColor) => {
+    const list = document.createElement('div');
+    list.classList.add('context-list');
+    list.style.backgroundColor = backgroundColor;
+    const handleClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        list.remove();
+        document.body.removeEventListener('mousedown', handleMouseDown);
+        const value = e.target.getAttribute('data-value');
+        target.value = value;
+        target.blur();
+        const event = new Event('change');
+        target.dispatchEvent(event);
+    };
+    values.forEach((v) => {
+        const item = document.createElement('div');
+        item.innerText = v[0];
+        item.classList.add('list-item');
+        item.setAttribute('data-value', v[1]);
+        item.addEventListener('click', handleClick);
+        list.appendChild(item);
+    });
+    const rect = target.getBoundingClientRect();
+    list.style.top = `${rect.top + rect.height + 4}px`;
+    list.style.left = `${rect.left}px`;
+    list.style.width = `${rect.width}px`;
+    const handleMouseDown = (e) => {
+        if (!e.target.classList.contains('list-item') && e.target !== target) {
+            list.remove();
+            target.blur();
+            document.body.removeEventListener('mousedown', handleMouseDown);
+        }
+    }
+    document.body.addEventListener('mousedown', handleMouseDown, { capture: true });
+    document.body.appendChild(list);
+};

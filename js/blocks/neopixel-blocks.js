@@ -302,6 +302,11 @@ class FadeInAllLedsWithColorsBlocklyElement extends NeopixelBlocklyElement {
         this._fadeInInMsInput.addEventListener('focus', (e) => {
             e.target.select();
             e.target.parentNode.classList.add('focused');
+            showContextList(
+                this._fadeInInMsInput,
+                [['0.1秒', 100], ['0.2秒', 200], ['0.5秒', 500], ['1秒', 1000], ['2秒', 2000]],
+                this._fill
+            );
         });
         this._fadeInInMsInput.addEventListener('blur', (e) => {
             e.target.parentNode.classList.remove('focused');
@@ -489,6 +494,11 @@ class FadeOutAllLEDsBlocklyElement extends NeopixelBlocklyElement {
         this._fadeOutInMsInput.addEventListener('focus', (e) => {
             e.target.select();
             e.target.parentNode.classList.add('focused');
+            showContextList(
+                this._fadeOutInMsInput,
+                [['0.1秒', 100], ['0.2秒', 200], ['0.5秒', 500], ['1秒', 1000], ['2秒', 2000]],
+                this._fill
+            );
         });
         this._fadeOutInMsInput.addEventListener('blur', (e) => {
             e.target.parentNode.classList.remove('focused');

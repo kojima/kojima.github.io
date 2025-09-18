@@ -727,3 +727,19 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   appearance: textfield;
 }
+
+.context-list {
+    position: absolute;
+    font: 400 10pt "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    color: #fff;
+    padding: 8px 0;
+}
+
+.context-list .list-item {
+    padding: 4px 16px;
+    cursor: pointer;
+}
+
+.context-list .list-item:hover {
+    background-color: rgba(0, 0, 0, .2);
+}
